@@ -1,0 +1,104 @@
+:root {
+    --header-height: 2rem;
+    --main-bg-clr: orange;
+    --header-bg-clr: blue;
+}
+
+body {
+    background: var(--main-bg-clr);
+    margin: 0;
+}
+header {
+    background: var(--header-bg-clr);
+    color: white;
+    margin: 0;
+    height: var(--header-height);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index:1000000;
+}
+header ul {
+    margin: 0;
+}
+header ul li {
+    display: inline-block;
+    list-style: none;
+    min-width: 1rem;
+    margin: 0.5rem;
+    cursor: pointer;
+}
+main {
+    max-width: 1600px;
+    margin: calc(2 * var(--header-height)) auto;
+    height: 1500px;
+}
+.output {
+    border: 2px solid black;
+    padding: 2em;
+}
+.game-grid {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    grid-template-rows: auto;
+    gap: 0.25rem;
+}
+.game-cell {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+.game-name {
+    width: 100%;
+}
+.game-name h3 {
+    margin-bottom: 0.25em;
+}
+.game-cover {
+    position: relative;
+}
+.game-cover img {
+    max-width: 100%;
+}
+.game-score {
+    position: absolute;
+    top: 10px;
+    background-image: linear-gradient(to right, red, yellow, green);
+    background-size: 250px 10px;
+    background-repeat: no-repeat;
+    background-attachment: bottom;
+    padding: 3px 5px 10px 5px;
+    color: white;
+    font-weight: 550;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+.game-bgg-score {
+    left: 10px;
+}
+.game-bgg-score::before {
+    content: 'BGG: ';
+    font-weight: 400;
+    font-size: 80%;
+}
+.game-user-score {
+    right: 10px;
+}
+.game-user-score::before {
+    content: 'User: ';
+    font-weight: 400;
+    font-size: 80%;
+}
+.game-data-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-weight: bold;
+}
+.game-data-row div {
+    text-align: center;
+    width: 100%;
+}
+.game-header-row {
+    font-weight: normal;
+    font-size: 80%;
+}
