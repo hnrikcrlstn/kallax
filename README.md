@@ -1,0 +1,2 @@
+# kallax
+Board game stats
