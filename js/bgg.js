@@ -34,10 +34,10 @@ function fetchAllGames() {
 function populate(boardgames) {
     
     boardgames.item.forEach(game => {
-        console.log(game);
-
         let playerCount = game.stats.maxplayers == game.stats.minplayers ? game.stats.maxplayers : game.stats.minplayers + '-' + game.stats.maxplayers;
         let playTime = game.stats.minplaytime == game.stats.maxplaytime ? game.stats.minplaytime : game.stats.minplaytime + '-' + game.stats.maxplaytime;
+        let userScore = game.stats.rating.value == "N/A" ? 0 : game.stats.rating.value;
+        
         let gameCell = document.createElement('div');
         gameCell.className = 'game-cell';
         gameCell.id = game.objectid;
@@ -46,8 +46,8 @@ function populate(boardgames) {
         '</div>' +
         '<div class="game-cover">' +
         '<div class="game-bgg-score game-score" style="background-position: ' + game.stats.rating.average.value * 10 + '% bottom">' + parseFloat(game.stats.rating.average.value).toFixed(2) + '</div>' +
-        '<div class="game-user-score game-score" style="background-position: ' + game.stats.rating.value * 10 + '% bottom">' + game.stats.rating.value + '</div>' +
-        '<img src="' + game.image + '">' + 
+        '<div class="game-user-score game-score" style="background-position: ' + userScore * 10 + '% bottom">' + game.stats.rating.value + '</div>' +
+        '<div class="game-cover-image" style="background-image: url(' + "'" + game.image + "'" + ')">' + 
         '</div>' +
         '<div class="game-data">' + 
         '<div class="game-data-row">' +
@@ -57,6 +57,7 @@ function populate(boardgames) {
         '<div class="game-data-row game-header-row">' +
         '<div>Players</div><div>Play time</div>' +
         '</div></div>'
+        
         $('.game-grid').append(gameCell)
     });
 }

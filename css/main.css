@@ -61,11 +61,19 @@ main {
 .game-cover img {
     max-width: 100%;
 }
+.game-cover-image {
+    height: 300px;
+    width: 300px;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
 .game-score {
     position: absolute;
-    top: 10px;
-    background-image: linear-gradient(to right, red, yellow, green);
-    background-size: 250px 10px;
+    bottom: 50px;
+    width: 70px;
+    background-image: linear-gradient(to right, transparent 70px, red 33%, yellow 66%, green);
+    background-size: 750px 10px;
     background-repeat: no-repeat;
     background-attachment: bottom;
     padding: 3px 5px 10px 5px;
