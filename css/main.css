@@ -1,12 +1,17 @@
 :root {
     --header-height: 2rem;
-    --main-bg-clr: orange;
-    --header-bg-clr: blue;
+    --main-bg-clr: #FFC107;
+    --header-bg-clr: #2b852e;
+    --score-gradient-padding: 85px;
 }
 
 body {
-    background: var(--main-bg-clr);
+    /* Background from https://www.toptal.com/designers/subtlepatterns/what-the-hex-dark/ */
+    background: url(/img/what-the-hex-dark.png);
+    background-color: var(--main-bg-clr);
     margin: 0;
+    font-family: 'Quicksand', sans-serif;
+    color: white;
 }
 header {
     background: var(--header-bg-clr);
@@ -14,9 +19,10 @@ header {
     margin: 0;
     height: var(--header-height);
     position: fixed;
+    font-weight: 525;
     width: 100%;
     top: 0;
-    z-index:1000000;
+    z-index: 4000;
 }
 header ul {
     margin: 0;
@@ -33,6 +39,7 @@ main {
     margin: calc(2 * var(--header-height)) auto;
     height: 1500px;
 }
+
 .output {
     border: 2px solid black;
     padding: 2em;
@@ -60,6 +67,7 @@ main {
 }
 .game-cover img {
     max-width: 100%;
+    position: absolute;
 }
 .game-cover-image {
     height: 300px;
@@ -67,31 +75,46 @@ main {
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
+    z-index: -1;
 }
 .game-score {
-    position: absolute;
-    bottom: 50px;
-    width: 70px;
-    background-image: linear-gradient(to right, transparent 70px, red 33%, yellow 66%, green);
-    background-size: 750px 10px;
+    position: relative;
+    width: 100%;
+    margin: 0.125em 0.25em;
+    background-image: linear-gradient(to right, white var(--score-gradient-padding), red 33%, yellow 66%, green);
+    background-color: black;
+    background-size: 750px 50px;
     background-repeat: no-repeat;
     background-attachment: bottom;
-    padding: 3px 5px 10px 5px;
-    color: white;
-    font-weight: 550;
-    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding: 0px 5px 0px 3px;
+    font-weight: 650;
+    z-index: 1;
 }
-.game-bgg-score {
+
+.game-score-container {
+    position: absolute;
+    background-color: rgba(0,0,0,0.65);
+    border-radius: 0.5em;
+    bottom: 20px;
+    width: var(--score-gradient-padding);
+}
+
+.game-score-container-bgg {
     left: 10px;
 }
+
+.game-score-container-user {
+    right: 10px;
+}
+
 .game-bgg-score::before {
     content: 'BGG: ';
     font-weight: 400;
     font-size: 80%;
 }
-.game-user-score {
-    right: 10px;
-}
+
 .game-user-score::before {
     content: 'User: ';
     font-weight: 400;
@@ -112,7 +135,79 @@ main {
     font-size: 80%;
 }
 
+.gameModal-background {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 5000;
+    background-color: rgba(0,0,0,0.8);
+    display: none;
+}
 
+.gameModal-box {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    width: 80%;
+    max-width: 800px;
+    min-height: 500px;
+    max-height: 85vh;
+    transform:translateX(-50%);
+    background: black;
+    color: white;
+    overflow: scroll;
+    display: grid;
+    grid-template-areas: 
+        ". . . close"
+        "name name name name"
+        "img img data data"
+        "desc desc desc desc";
+    grid-template-columns: 3fr 3fr 15rem 1em;
+    grid-template-rows: auto;
+    padding: 0.5em;
+    border-radius: 2em;
+    /* Background from https://www.toptal.com/designers/subtlepatterns/what-the-hex-dark/ */
+    background: url(/img/what-the-hex-dark.png);
+}
+
+.gameModal-close {
+    grid-area: close;
+}
+
+.gameModal-image-container {
+    grid-area: img;
+}
+
+.gameModal-image {
+    display: block;
+    margin: 0 auto;
+    max-width:500px;
+    max-height:400px;
+}
+
+.gameModal-data {
+    grid-area: data;
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    align-items: stretch;
+}
+
+.gameModal-data .header {
+    font-weight: bold;
+}
+
+.gameModal-name-container {
+    grid-area: name;
+}
+
+.gameModal-description {
+    grid-area: desc;
+}
 
 @media screen and (max-width: 1300px){
     .game-grid {

@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
     <script src="/js/jquery-3.6.0.min.js"></script>
     <script src="/js/jquery.xml2json.js"></script>
     <script type="text/javascript" src="/js/bgg.js"></script>
@@ -18,35 +19,60 @@
             <li>Randomize</li>
             <li>Playtime</li>
             <li>Player count</li>
+            <li>Long time no play</li>
         </ul>
     </header>
     <main>
 
         <div class="game-grid">
-            <!-- old example 
-            <div class="game-cell">
-                <div class="game-name">
-                    <h3>7 Wonders: Duel</h3>
-                </div>
-                <div class="game-cover">
-                    <div class="game-bgg-score game-score" style="background-position: 81% bottom">8.1</div>
-                    <div class="game-user-score game-score" style="background-position: 10% bottom">7.75</div>
-                    <img src="https://cf.geekdo-images.com/zdagMskTF7wJBPjX74XsRw__original/img/Ju836WNSaW7Mab9Vjq2TJ_FqhWQ=/0x0/filters:format(jpeg)/pic2576399.jpg">
-                </div>
-                <div class="game-data">
-                    <div class="game-data-row">
-                        <div>2</div>
-                        <div>3.4</div>
-                        <div>30 min</div>
-                    </div>
-                    <div class="game-data-row game-header-row">
-                        <div>Players</div>
-                        <div>Best at</div>
-                        <div>Time</div>
-                    </div>
-                </div>
-            </div> -->
+
         </div>
     </main>
+    <div class="gameModal-background" data-visible="0">
+        <div class="gameModal-box">
+            <div class="gameModal-close">x</div>
+            <div class="gameModal-name-container">
+                <a href="#" class="bgg-link"><h2 class="gameModal-name"></h2></a>
+            </div>
+            <div class="gameModal-image-container">
+                <a href="#" class="bgg-link"><img class="gameModal-image"></a>
+            </div>
+            <div class="gameModal-data">
+                <div class="gameModal-players">
+                    <div class="data"></div> 
+                    <div class="header">Players</div>
+                </div>
+                <div class="gameModal-weight">
+                    <div class="data"></div>
+                    <div class="header">Complexity</div>
+                </div>
+                <div class="gameModal-time">
+                    <div class="data"></div>
+                    <div class="header">Playtime</div>
+                </div>
+                <div class="gameModal-score-bgg">
+                    <div class="data"></div>
+                    <div class="header">BGG Rating</div>
+                </div>
+                <div class="gameModal-score-player">
+                    <div class="data"></div>
+                    <div class="header">User rating</div>
+                </div>
+                <div class="gameModal-last-played">
+                    <div class="data"></div>
+                    <div class="header">Last played</div>
+                </div>
+                <div class="gameModal-keywords">
+                    <div class="data"></div>
+                    <div class="header">Keywords</div>
+                </div>
+            </div>
+            <div class="gameModal-expansions">
+
+                
+            </div>
+            <p class="gameModal-description"></p>
+        </div>
+    </div>
 </body>
 </html> 
