@@ -1,5 +1,5 @@
 :root {
-    --header-height: 2rem;
+    --header-height: 3rem;
     --main-bg-clr: #FFC107;
     --header-bg-clr: #2b852e;
     --score-gradient-padding: 85px;
@@ -10,6 +10,7 @@ body {
     background: url(/img/what-the-hex-dark.png);
     background-color: black;
     margin: 0;
+    padding: 0;
     font-family: 'Quicksand', sans-serif;
     color: white;
 }
@@ -17,7 +18,9 @@ header {
     background: var(--header-bg-clr);
     color: white;
     margin: 0;
+    padding: 0;
     height: var(--header-height);
+    line-height: var(--header-height);
     position: fixed;
     font-weight: 525;
     width: 100%;
@@ -25,14 +28,38 @@ header {
     z-index: 4000;
 }
 header ul {
-    margin: 0;
+    margin: 0 0 0 2em;
+    padding: 0;
 }
-header ul li {
+header > ul li {
     display: inline-block;
     list-style: none;
     min-width: 1rem;
-    margin: 0.5rem;
+    margin-right: 0.5rem;
+    padding-left: 0.5rem;
     cursor: pointer;
+    position: relative;
+}
+.header-sub-menu-ul {
+    position: absolute;
+    display: none;
+    top: var(--header-height);
+    left: 0;
+    margin: 0;
+    min-width: 100%;
+    width: fit-content;
+    background: orange; 
+}
+.header-sub-menu-checkbox:checked ~ .header-sub-menu-ul {
+    display: inline;
+}
+.header-sub-menu-li {
+    display: block;
+    list-style: none;
+
+}
+.header-sub-menu-checkbox {
+    display: none;
 }
 main {
     max-width: 1600px;
@@ -55,6 +82,7 @@ main {
     width: 300px;
     display: flex;
     flex-direction: column;
+    cursor: pointer;
 }
 .game-name {
     width: 100%;
@@ -64,17 +92,20 @@ main {
 }
 .game-cover {
     position: relative;
+
 }
 .game-cover img {
     max-width: 100%;
-    position: absolute;
+    max-height: 100%;
+    height: auto;
+    width: auto;
 }
 .game-cover-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 300px;
     width: 300px;
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
     z-index: -1;
 }
 .game-score {

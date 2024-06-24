@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="/css/main.css">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
     <script src="/js/jquery-3.6.0.min.js"></script>
+    <!-- Lazy loading from https://afarkas.github.io/lazysizes/ -->
+    <script src="/js/lazysizes.min.js"></script>
     <script src="/js/jquery.xml2json.js"></script>
     <script type="text/javascript" src="/js/bgg.js"></script>
     <title>Kallax</title>
@@ -14,11 +16,31 @@
 <body>
     <header>
         <ul>
-            <li class="high-score">High score</li>
+            <li class="high-score">
+                <input type="checkbox" class="header-sub-menu-checkbox high-score-show" id="high-score-show">
+                <label for="high-score-show" class="header-sub-menu-label">High scores</label>
+                    <ul class="high-score-select header-sub-menu-ul">
+                        <li class="high-score-item header-sub-menu-li">Boardgamegeek</li>
+                        <li class="high-score-item header-sub-menu-li">User ranking</li>
+                    </ul>
+            </li>
             <li class="last-played">Last played</li>
             <li class="random">Randomize</li>
             <li class="playtime">Playtime</li>
-            <li class="player-count">Player count</li>
+            <li class="player-count">
+                <input type="checkbox" class="header-sub-menu-checkbox player-count-show" id="player-count-show">
+                <label for="player-count-show" class="header-sub-menu-label">Player Count</label>
+                <ul class="player-count-select header-sub-menu-ul">
+                    <li class="player-count-item header-sub-menu-li">1 Player</li>
+                    <li class="player-count-item header-sub-menu-li">2 Players</li>
+                    <li class="player-count-item header-sub-menu-li">3 Players</li>
+                    <li class="player-count-item header-sub-menu-li">4 Players</li>
+                    <li class="player-count-item header-sub-menu-li">5 Players</li>
+                    <li class="player-count-item header-sub-menu-li">6 Players</li>
+                    <li class="player-count-item header-sub-menu-li">7 Players</li>
+                    <li class="player-count-item header-sub-menu-li">7+ Players</li>
+                </ul>
+            </li>
             <li class="blast-from-the-past">Long time no play</li>
         </ul>
     </header>

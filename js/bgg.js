@@ -23,6 +23,35 @@ $(document).on('click', '.gameModal-background, .gameModal-close', function(e) {
         resetModal();
     }
 });
+function lazyload() {
+    var lazyloadImages = document.querySelectorAll(".lazy-load");    
+    var lazyloadThrottleTimeout;
+    
+    function lazyload () {
+        if(lazyloadThrottleTimeout) {
+        clearTimeout(lazyloadThrottleTimeout);
+    }    
+    
+    lazyloadThrottleTimeout = setTimeout(function() {
+        var scrollTop = window.pageYOffset;
+        lazyloadImages.forEach(function(img) {
+            if(img.offsetTop < (window.innerHeight + scrollTop)) {
+                img.src = img.dataset.src;
+                img.classList.remove('lazy');
+            }
+        });
+        if(lazyloadImages.length == 0) { 
+            document.removeEventListener("scroll", lazyload);
+            window.removeEventListener("resize", lazyload);
+            window.removeEventListener("orientationChange", lazyload);
+        }
+    }, 20);
+    }
+    
+    document.addEventListener("scroll", lazyload);
+    window.addEventListener("resize", lazyload);
+    window.addEventListener("orientationChange", lazyload);
+}
 
 /* This fetches all base game, which will be displayed in the grid */
 async function fetchGames() {
@@ -95,7 +124,7 @@ async function fetchLastPlayed(gameId) {
 
 async function populateGrid(games) {
     /* Create a new game cell for each game in collection */
-    console.log(games.item.length);
+    console.log('Total games: ' + games.item.length);
     for (const game of games.item) {
         let lastPlayed;
         try {
@@ -105,7 +134,6 @@ async function populateGrid(games) {
 
         }
 
-        console.log(game.name.text);
         /* Handle single data (only 2 players, only 30 min playtimes) responses */
         let playerCount = game.stats.maxplayers == game.stats.minplayers ? game.stats.maxplayers : game.stats.minplayers + '-' + game.stats.maxplayers;
         let playTime = game.stats.minplaytime == game.stats.maxplaytime ? game.stats.minplaytime : game.stats.minplaytime + '-' + game.stats.maxplaytime;
@@ -126,7 +154,7 @@ async function populateGrid(games) {
             '<div class="game-score-container" style="left: 10px">' +
             '<div class="game-user-score game-score" style="background-position: ' + userScore * 10 + '% bottom">' + game.stats.rating.value + '</div>' +
             '</div>' +
-            '<div class="game-cover-image" style="background-image: url(' + "'" + game.image + "'" + ')">' + 
+            '<div class="game-cover-image"><img class="lazyload" src="' + game.thumbnail + '" data-src="' + game.image + '"></div>' + 
             '</div></div>' +
             '<div class="game-data">' + 
             '<div class="game-data-row">' +
@@ -138,6 +166,7 @@ async function populateGrid(games) {
             '</div></div>';
         $('.game-grid').append(gameCell);
     };
+    lazyload();
 }
 
 function toggleModal(id) {
