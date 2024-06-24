@@ -12,6 +12,14 @@ const api_url = 'https://boardgamegeek.com/xmlapi2/';
 $(document).ready(function() {
     fetchGames();
     fetchAllExpansions();
+
+    /* Force only one sub menu open at a time */
+    $('.header-sub-menu-checkbox').on('click', function() {
+        if ($(this).prop('checked')) {
+            $('.header-sub-menu-checkbox').prop('checked', false);
+            $(this).prop('checked', true);
+        }
+    })
 })
 
 /* Event listeners */
@@ -23,35 +31,6 @@ $(document).on('click', '.gameModal-background, .gameModal-close', function(e) {
         resetModal();
     }
 });
-function lazyload() {
-    var lazyloadImages = document.querySelectorAll(".lazy-load");    
-    var lazyloadThrottleTimeout;
-    
-    function lazyload () {
-        if(lazyloadThrottleTimeout) {
-        clearTimeout(lazyloadThrottleTimeout);
-    }    
-    
-    lazyloadThrottleTimeout = setTimeout(function() {
-        var scrollTop = window.pageYOffset;
-        lazyloadImages.forEach(function(img) {
-            if(img.offsetTop < (window.innerHeight + scrollTop)) {
-                img.src = img.dataset.src;
-                img.classList.remove('lazy');
-            }
-        });
-        if(lazyloadImages.length == 0) { 
-            document.removeEventListener("scroll", lazyload);
-            window.removeEventListener("resize", lazyload);
-            window.removeEventListener("orientationChange", lazyload);
-        }
-    }, 20);
-    }
-    
-    document.addEventListener("scroll", lazyload);
-    window.addEventListener("resize", lazyload);
-    window.addEventListener("orientationChange", lazyload);
-}
 
 /* This fetches all base game, which will be displayed in the grid */
 async function fetchGames() {
@@ -135,9 +114,9 @@ async function populateGrid(games) {
         }
 
         /* Handle single data (only 2 players, only 30 min playtimes) responses */
-        let playerCount = game.stats.maxplayers == game.stats.minplayers ? game.stats.maxplayers : game.stats.minplayers + '-' + game.stats.maxplayers;
-        let playTime = game.stats.minplaytime == game.stats.maxplaytime ? game.stats.minplaytime : game.stats.minplaytime + '-' + game.stats.maxplaytime;
-        let userScore = game.stats.rating.value == "N/A" ? 0 : game.stats.rating.value;
+        const playerCount = game.stats.maxplayers == game.stats.minplayers ? game.stats.maxplayers : game.stats.minplayers + '-' + game.stats.maxplayers;
+        const playTime = game.stats.minplaytime == game.stats.maxplaytime ? game.stats.minplaytime : game.stats.minplaytime + '-' + game.stats.maxplaytime;
+        const userScore = game.stats.rating.value == "N/A" ? 0 : game.stats.rating.value;
         
         let gameCell = document.createElement('div');
         gameCell.className = 'game-cell';
@@ -166,7 +145,6 @@ async function populateGrid(games) {
             '</div></div>';
         $('.game-grid').append(gameCell);
     };
-    lazyload();
 }
 
 function toggleModal(id) {
@@ -196,6 +174,7 @@ function populateModal(game) {
             mechanicsCounter++;
         }
     }); 
+
     /* Recommended player counts */
     let bestPlayerCount = 0;
     if (game.item.minplayers.value == game.item.maxplayers.value) {
@@ -206,9 +185,9 @@ function populateModal(game) {
             if (poll.name == "suggested_numplayers") {
                 poll.results.forEach(result => {
                     /* Votes for best playrange */
-                    if (result.result[0].numvotes > votes) {
+                    if (Number(result.result[0].numvotes) >= votes) {
                         bestPlayerCount = result.numplayers;
-                        votes = result.result[0].numvotes;
+                        votes = Number(result.result[0].numvotes);
                     }
                 })
             }
