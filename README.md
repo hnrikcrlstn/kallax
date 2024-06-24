@@ -8,6 +8,7 @@ In `js/bgg.js`, replace `bggUserName` with your username from Boardgamegeek.
 ## External resources
 * Lazyloading plugin from [afarkas](https://afarkas.github.io/lazysizes/)
 * Background image from [toptal](https://www.toptal.com/designers/subtlepatterns/what-the-hex-dark/)
+* xml2json from [Fyneworks](http://www.fyneworks.com)
 
 ### To dos
 - [x] List a whole collection
