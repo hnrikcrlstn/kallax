@@ -18,18 +18,25 @@
         <ul>
             <li class="high-score">
                 <input type="checkbox" class="header-sub-menu-checkbox high-score-show" id="high-score-show">
-                <label for="high-score-show" class="header-sub-menu-label">High scores</label>
+                <label for="high-score-show" class="header-sub-menu-label">
+                    High scores
+                    <div class="header-sub-menu-background"></div>
+                </label>
                     <ul class="high-score-select header-sub-menu-ul">
                         <li class="high-score-item header-sub-menu-li">Boardgamegeek</li>
-                        <li class="high-score-item header-sub-menu-li">User ranking</li>
+                        <li class="high-score-item header-sub-menu-li">User ranking</li>                        
                     </ul>
+                    
             </li>
             <li class="last-played">Last played</li>
             <li class="random">Randomize</li>
             <li class="playtime">Playtime</li>
             <li class="player-count">
                 <input type="checkbox" class="header-sub-menu-checkbox player-count-show" id="player-count-show">
-                <label for="player-count-show" class="header-sub-menu-label">Player Count</label>
+                <label for="player-count-show" class="header-sub-menu-label">
+                    Player Count
+                    <div class="header-sub-menu-background"></div>
+                </label>
                 <ul class="player-count-select header-sub-menu-ul">
                     <li class="player-count-item header-sub-menu-li">1 Player</li>
                     <li class="player-count-item header-sub-menu-li">2 Players</li>
@@ -44,12 +51,13 @@
             <li class="blast-from-the-past">Long time no play</li>
         </ul>
     </header>
+
+    <!-- To be populated from /js/bgg.js -->
     <main>
-
-        <div class="game-grid">
-
-        </div>
+        <div class="game-grid"></div>
     </main>
+
+    <!-- Structure for the modal, with no game data -->
     <div class="gameModal-background" data-visible="0">
         <div class="gameModal-box">
             <div class="gameModal-close">x</div>
@@ -90,7 +98,6 @@
                 </div>
             </div>
             <div class="gameModal-expansions">
-
                 
             </div>
             <p class="gameModal-description"></p>
