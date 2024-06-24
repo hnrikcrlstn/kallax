@@ -10,9 +10,9 @@ In `js/bgg.js`, replace `bggUserName` with your username from Boardgamegeek.
 * Background image from [toptal](https://www.toptal.com/designers/subtlepatterns/what-the-hex-dark/)
 
 ### To dos
-[x] List a whole collection
-[x] Fetch play data
-[] Add sorting and filtering
-[] Show owned expansions
-[] Show not owned expansions
-[] Show recommendations for new games
+- [x] List a whole collection
+- [x] Fetch play data
+- [ ] Add sorting and filtering
+- [ ] Show owned expansions
+- [ ] Show not owned expansions
+- [ ] Show recommendations for new games
