@@ -145,6 +145,12 @@ async function populateGrid(games) {
             '</div></div>';
         $('.game-grid').append(gameCell);
     };
+    if ($('.game-cell').length !==  games.item.length) {
+        alert('Loading failed'); /* Test */
+        window.location.reload();
+    } else {
+        console.log('Grid loaded succesfully: ' + $('.game-cell').length);
+    }
 }
 
 function toggleModal(id) {

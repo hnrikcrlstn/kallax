@@ -259,6 +259,10 @@ main {
     grid-area: name;
 }
 
+.gameModal-name {
+    display: inline-block;
+}
+
 .gameModal-description {
     grid-area: desc;
 }
