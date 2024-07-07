@@ -375,4 +375,40 @@ footer {
         display: block;
         margin: 0 auto;
     }
+
+    .gameModal-data {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+        grid-template-areas: 
+        "players weight"
+        "time lastPlayed"
+        "bggRating usrRating"
+        "keyWord keyWord";
+        gap: 1rem;
+    }
+
+    .gameModal-players {
+        grid-area: players;
+    }
+
+    .gameModal-weight {
+        grid-area: weight;
+    }
+
+    .gameModal-time {
+        grid-area: time;
+    }
+
+    .gameModal-score-bgg {
+        grid-area: bggRating;
+    }
+
+    .gameModal-score-player {
+        grid-area: usrRating;
+    }
+
+    .gameModal-keywords {
+        grid-area: keyWord;
+    }
 }
