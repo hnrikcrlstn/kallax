@@ -95,22 +95,28 @@ async function fetchSpecificExpansion(expansions) {
             let expansionName = expansionData.item.name.length > 1 ? expansionData.item.name[0].value : expansionData.item.name.value;
             expansionName = expansionName.replace($('.gameModal-name').text(), '');
             expansionName = cleanBadCharacters(expansionName);
-            const expansionCell = $('<div class="gameModal-expansion-item ' + (ownedExpansions.includes(exp) ? 'gameModal-expansions-owned' : 'gameModal-expansions-notOwned') + '" id="' + exp + '">' +
-                '<div class="gameModal-expansion-image-container">' +
-                '<a href="https://boardgamegeek.com/boardgame/' + expansionData.item.id + '" target="_blank" class="bgg-link">' +
-                '<img class="gameModal-expansion-image" src="' + expansionData.item.thumbnail + '">' +
-                '</a>' +
-                '</div>' +
-                '<a href="https://boardgamegeek.com/boardgame/' + expansionData.item.id + '" target="_blank" class="bgg-link">' +
-                '<h4 class="gameModal-expansion-name">' + expansionName + '</h4>' +
-                '</a>' +
-                '</div>');
-            $('.gameModal-expansions').append(expansionCell);
+            if (expansionName.toLowerCase().indexOf('promo') <= -1 && expansionName.toLowerCase().indexOf('fan exp') <= -1) {
+                const expansionCell = $('<div class="gameModal-expansion-item ' + (ownedExpansions.includes(exp) ? 'gameModal-expansions-owned' : 'gameModal-expansions-notOwned') + '" id="' + exp + '">' +
+                    '<div class="gameModal-expansion-image-container">' +
+                    '<a href="https://boardgamegeek.com/boardgame/' + expansionData.item.id + '" target="_blank" class="bgg-link">' +
+                    '<img class="gameModal-expansion-image" src="' + expansionData.item.thumbnail + '">' +
+                    '</a>' +
+                    '</div>' +
+                    '<a href="https://boardgamegeek.com/boardgame/' + expansionData.item.id + '" target="_blank" class="bgg-link">' +
+                    '<h4 class="gameModal-expansion-name">' + expansionName + '</h4>' +
+                    '</a>' +
+                    '</div>');
+                $('.gameModal-expansions').append(expansionCell);
+            }
         } catch (error) {
             console.error('Error fetching expansion data: ' + error);
             throw error;
         }
+        delay(200);
     }
+    if ($('.gameModal-expansion-item').length) {
+        $('.gameModal-expansion-header').show();
+    };
 }
 
 async function fetchLastPlayed(gameId) {
@@ -139,9 +145,10 @@ async function populateGrid(games) {
             lastPlayed = await fetchLastPlayed(game.objectid);
         } catch(error) {
             console.error('Error fetching last played:', error);
+            throw error;
         }
         /* Added delay to prevent 429 errors */
-        delay(100);
+        delay(200);
 
         /* Handle single data (only 2 players, only 30 min playtimes) responses */
         const playerCount = game.stats.maxplayers == game.stats.minplayers ? game.stats.maxplayers : game.stats.minplayers + '-' + game.stats.maxplayers;
@@ -178,8 +185,6 @@ async function populateGrid(games) {
     if ($('.game-cell').length !==  games.item.length) {
         alert('Loading failed'); /* Test */
         window.location.reload();
-    } else {
-        console.log('Grid loaded succesfully: ' + $('.game-cell').length);
     }
 }
 
@@ -250,7 +255,6 @@ async function populateModal(game) {
     $('.gameModal-background').attr('data-visible' , 1).fadeIn('150ms');
     if (expansions.length > 0) {
         fetchSpecificExpansion(expansions);
-        $('.gameModal-expansion-header').show();
     }
 }
 
