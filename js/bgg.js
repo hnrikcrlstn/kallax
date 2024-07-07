@@ -112,11 +112,12 @@ async function fetchSpecificExpansion(expansions) {
             console.error('Error fetching expansion data: ' + error);
             throw error;
         }
+        if ($('.gameModal-expansion-item').length) {
+            $('.gameModal-expansion-header').show();
+        };
         delay(200);
     }
-    if ($('.gameModal-expansion-item').length) {
-        $('.gameModal-expansion-header').show();
-    };
+
 }
 
 async function fetchLastPlayed(gameId) {
