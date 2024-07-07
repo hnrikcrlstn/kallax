@@ -81,7 +81,10 @@ header > ul li {
 main {
     max-width: 1600px;
     margin: calc(2 * var(--header-height)) auto;
-    height: 1500px;
+}
+
+footer {
+    z-index: 55555;
 }
 
 .output {
@@ -209,8 +212,10 @@ main {
     grid-template-areas: 
         "name name name close"
         "img img data data"
+        "expHeader expHeader expHeader expHeader"
+        "exp exp exp exp"
         "desc desc desc desc";
-    grid-template-columns: 3fr 3fr 15rem 1em;
+    grid-template-columns: 1fr 1fr 10rem 1rem;
     grid-template-rows: auto;
     padding: 0.5em;
     border-radius: 2em;
@@ -221,6 +226,10 @@ main {
 .gameModal-box .bgg-link {
     color: white;
     text-decoration: none;
+}
+
+.gameModal-name {
+    display: inline-block;
 }
 
 .gameModal-close {
@@ -259,8 +268,51 @@ main {
     grid-area: name;
 }
 
-.gameModal-name {
-    display: inline-block;
+.gameModal-expansion-header {
+    grid-area: expHeader;
+    width: 100%;
+}
+
+.gameModal-expansions {
+    grid-area: exp;
+    display: flex;
+    width: 100%;
+    overflow-y: auto;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    gap: 1em;
+}
+
+.gameModal-expansion-item {
+    max-width: 30%;
+    max-height: 200px;
+    min-width: 150px;
+}
+
+.gameModal-expansion-image-container {
+    align-content: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    overflow: hidden;
+}
+
+.gameModal-expansion-image {
+    display: block;
+    height: 100px;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.gameModal-expansions-notOwned {
+    opacity: 0.5;
+}
+
+.gameModal-expansion-name {
+    word-wrap: break-word;
+    text-align: center;
 }
 
 .gameModal-description {
@@ -300,5 +352,18 @@ main {
     .game-grid {
         grid-template-columns: auto;
         justify-content: center;
+    }
+
+    footer {
+        background: rgba(0,0,0,0.75);
+        width: 100%;
+        z-index: 10;
+        position: fixed;
+        bottom: 0;
+    }
+
+    footer img {
+        display: block;
+        margin: 0 auto;
     }
 }
