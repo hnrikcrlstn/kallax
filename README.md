@@ -6,7 +6,7 @@ View your favourites, and get suggestions for games you haven't played in a whil
 In `js/bgg.js`, replace `bggUserName` with your username from Boardgamegeek.
 
 ## External resources
-* BGG XML API2 from [Boardgamegeek](https://boardgamegeek.com/wiki/page/BGG_XML_API2)
+* BGG XML API2 from [Boardgamegeek](https://boardgamegeek.com/wiki/page/BGG_XML_API2). All boardgame info is fetched from and owned by BoardGameGeek.
 * Lazyloading plugin from [afarkas](https://afarkas.github.io/lazysizes/)
 * Background image from [toptal/Subtlepatterns](https://www.toptal.com/designers/subtlepatterns/what-the-hex-dark/)
 * xml2json from [Fyneworks](http://www.fyneworks.com)
@@ -14,8 +14,8 @@ In `js/bgg.js`, replace `bggUserName` with your username from Boardgamegeek.
 
 ### To dos
 - [x] List a whole collection
-- [x] Fetch play data
+- [x] Fetch play dates
+- [x] Show owned expansions
+- [x] Show not owned expansions
 - [ ] Add sorting and filtering
-- [ ] Show owned expansions
-- [ ] Show not owned expansions
 - [ ] Show recommendations for new games
