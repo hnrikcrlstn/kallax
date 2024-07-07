@@ -338,6 +338,8 @@ footer {
             "name close"
             "img img"
             "data data"
+            "expHeader expHeader"
+            "exp exp"
             "desc desc";
         grid-template-columns: 1fr 1em;
         gap: 0.25em;
