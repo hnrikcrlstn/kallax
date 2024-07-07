@@ -39,8 +39,12 @@ header > ul li {
     min-width: 1rem;
     margin-right: 0.5rem;
     padding-left: 0.5rem;
-    cursor: pointer;
+    cursor: not-allowed;
     position: relative;
+}
+
+header label {
+    cursor: not-allowed;
 }
 .header-sub-menu-ul {
     position: absolute;
@@ -328,6 +332,9 @@ footer {
 }
 
 @media screen and (max-width: 1000px){
+    header {
+        display: none;
+    }
     .game-grid {
         grid-template-columns: auto auto;
         justify-content: space-evenly;
