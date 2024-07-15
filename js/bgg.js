@@ -35,7 +35,9 @@ $(document).on('click', '.gameModal-background, .gameModal-close', function(e) {
 async function fetchGames() {
     $.ajax({
         url: api_url + 'collection?username=' + bggUserName + '&stats=1&excludesubtype=boardgameexpansion',
-        dataType: 'text'
+        dataType: 'text',
+        type: 'GET',
+        crossDomain: true
     }).done(function(data, statusText, XHR) {
         if (XHR.status == 200) {
             for (let i = 0; i < $.xml2json(data).item.length; i++) {
@@ -56,7 +58,9 @@ async function fetchGames() {
 async function fetchAllExpansions() {
     $.ajax({
         url: api_url + 'collection?username=' + bggUserName + '&stats=1&subtype=boardgameexpansion',
-        dataType: 'text'
+        dataType: 'text',
+        type: 'GET',
+        crossDomain: true
     }).done(function(data, statusText, XHR) {
         if (XHR.status == 200) {
             expansions = $.xml2json(data);
@@ -79,11 +83,12 @@ async function fetchSpecificGame(boardGameId) {
         const result = $.xml2json(await $.ajax({
             url: api_url + '/thing?id=' + boardGameId + '&stats=1',
             dataType: 'text',
-            type: 'GET'
+            type: 'GET',
+            crossDomain: true
         }));
         return result;
     } catch(error) {
-        console.error('Error from fetchLastPlayed: ', error);
+        console.error('Error from fetchSpecificGame: ', error);
         throw error;
     }
 }
@@ -124,7 +129,8 @@ async function fetchLastPlayed(gameId) {
     try {
         const result = $.xml2json(await $.ajax({
             url: api_url + 'plays?username=' + bggUserName + '&stats=1&id=' + gameId,
-            type: 'GET'
+            type: 'GET',
+            crossDomain: true
         }));
         
         if (result.play) {
@@ -141,16 +147,6 @@ async function fetchLastPlayed(gameId) {
 async function populateGrid(games) {
     /* Create a new game cell for each game in collection */
     for (const game of games.item) {
-        let lastPlayed;
-        try {
-            lastPlayed = await fetchLastPlayed(game.objectid);
-        } catch(error) {
-            console.error('Error fetching last played:', error);
-            throw error;
-        }
-        /* Added delay to prevent 429 errors */
-        delay(500);
-
         /* Handle single data (only 2 players, only 30 min playtimes) responses */
         const playerCount = game.stats.maxplayers == game.stats.minplayers ? game.stats.maxplayers : game.stats.minplayers + '-' + game.stats.maxplayers;
         const playTime = game.stats.minplaytime == game.stats.maxplaytime ? game.stats.minplaytime : game.stats.minplaytime + '-' + game.stats.maxplaytime;
@@ -160,7 +156,6 @@ async function populateGrid(games) {
         gameCell.className = 'game-cell';
         gameCell.id = game.objectid;
         gameCell.setAttribute('data-user-score' , userScore == "N/A" ? 0 : userScore);
-        gameCell.setAttribute('data-last-played' , lastPlayed);
         gameCell.innerHTML = '<div class="game-name">' +
             '<h3>' + game.name + '</h3>' + 
             '</div>' +
@@ -183,6 +178,7 @@ async function populateGrid(games) {
             '</div></div>';
         $('.game-grid').append(gameCell);
     };
+    console.log('Fetched lenght: ' + games.item.length);
     if ($('.game-cell').length <  games.item.length) {
         alert('Loading failed'); /* Test */
         window.location.reload();
@@ -198,7 +194,6 @@ async function toggleModal(id) {
 }
 
 async function populateModal(game) {
-    let votes = 0;
     let keywords = new Array();
     let expansions = new Array();
     let keywordsCounter = 0;
@@ -239,7 +234,7 @@ async function populateModal(game) {
     $('.gameModal-weight .data').text((game.item.statistics.ratings.averageweight.value * 1).toFixed(2));
     $('.gameModal-score-player .data').text(document.getElementById(game.item.id).getAttribute('data-user-score'));
     $('.gameModal-score-bgg .data').text((game.item.statistics.ratings.average.value * 1).toFixed(2));
-    $('.gameModal-last-played .data').text(document.getElementById(game.item.id).getAttribute('data-last-played'));
+    $('.gameModal-last-played .data').text(await fetchLastPlayed(game.item.id));
     $('.gameModal-keywords .data').text(keywords.join(', '));
     $('.gameModal-background').attr('data-visible' , 1).fadeIn('150ms');
     if (expansions.length > 0) {
@@ -248,6 +243,7 @@ async function populateModal(game) {
 }
 
 function fetchPlayerCount(item) {
+    let votes = 0;
     item.poll.forEach(poll => {
         if (poll.name == "suggested_numplayers") {
             poll.results.forEach(result => {
