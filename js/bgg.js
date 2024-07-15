@@ -115,7 +115,7 @@ async function fetchSpecificExpansion(expansions) {
         if ($('.gameModal-expansion-item').length) {
             $('.gameModal-expansion-header').show();
         };
-        delay(200);
+        delay(500);
     }
 
 }
@@ -149,7 +149,7 @@ async function populateGrid(games) {
             throw error;
         }
         /* Added delay to prevent 429 errors */
-        delay(200);
+        delay(500);
 
         /* Handle single data (only 2 players, only 30 min playtimes) responses */
         const playerCount = game.stats.maxplayers == game.stats.minplayers ? game.stats.maxplayers : game.stats.minplayers + '-' + game.stats.maxplayers;
@@ -183,7 +183,7 @@ async function populateGrid(games) {
             '</div></div>';
         $('.game-grid').append(gameCell);
     };
-    if ($('.game-cell').length !==  games.item.length) {
+    if ($('.game-cell').length <  games.item.length) {
         alert('Loading failed'); /* Test */
         window.location.reload();
     }
@@ -220,25 +220,13 @@ async function populateModal(game) {
     }); 
 
     /* Recommended player counts */
-    let bestPlayerCount = 0;
     if (game.item.minplayers.value == game.item.maxplayers.value) {
         $('.gameModal-players .data').text(game.item.minplayers.value);
     } else {
         /* If not fixed player count, fetch recommended player count */
-        game.item.poll.forEach(poll => {
-            if (poll.name == "suggested_numplayers") {
-                poll.results.forEach(result => {
-                    /* Votes for best playrange */
-                    if (Number(result.result[0].numvotes) >= votes) {
-                        bestPlayerCount = result.numplayers;
-                        votes = Number(result.result[0].numvotes);
-                    }
-                })
-            }
-        })
+        let bestPlayerCount = fetchPlayerCount(game.item);
         $('.gameModal-players .data').text(game.item.minplayers.value + '-' + game.item.maxplayers.value + ' (best at ' + bestPlayerCount + ')');
     }
-
     if (game.item.minplaytime.value == game.item.maxplaytime.value) {
         $('.gameModal-time .data').text(game.item.minplaytime.value + ' min');
     } else {
@@ -257,6 +245,21 @@ async function populateModal(game) {
     if (expansions.length > 0) {
         fetchSpecificExpansion(expansions);
     }
+}
+
+function fetchPlayerCount(item) {
+    item.poll.forEach(poll => {
+        if (poll.name == "suggested_numplayers") {
+            poll.results.forEach(result => {
+                /* Votes for best playrange */
+                if (Number(result.result[0].numvotes) >= votes) {
+                    bestPlayerCount = result.numplayers;
+                    votes = Number(result.result[0].numvotes);
+                }
+            })
+        }
+    })
+    return bestPlayerCount;
 }
 
 function resetModal() {
