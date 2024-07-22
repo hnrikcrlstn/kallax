@@ -95,6 +95,11 @@ footer {
     border: 2px solid black;
     padding: 2em;
 }
+
+.hidden {
+    display: none;
+}
+
 .game-grid {
     display: grid;
     grid-template-columns: auto auto auto auto;
@@ -107,6 +112,10 @@ footer {
     display: flex;
     flex-direction: column;
     cursor: pointer;
+}
+
+.game-cell-inactive {
+    opacity: 0.5;
 }
 .game-name {
     width: 100%;
@@ -123,6 +132,7 @@ footer {
     max-height: 100%;
     height: auto;
     width: auto;
+    object-fit: contain;
 }
 .game-cover-image {
     display: flex;
@@ -292,6 +302,7 @@ footer {
     max-width: 30%;
     max-height: 200px;
     min-width: 150px;
+    position: relative;
 }
 
 .gameModal-expansion-image-container {
@@ -317,6 +328,41 @@ footer {
 .gameModal-expansion-name {
     word-wrap: break-word;
     text-align: center;
+}
+
+.gameModal-expansion-price {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    opacity: 11;
+    text-decoration: none;
+    color: white;
+    font-weight: 450;
+    font-style: italic;
+    text-align: center;
+    width: max-content;
+    transform: translateX(-50%);
+    padding: 0.25em;
+}
+
+.gameModal-expansion-price::before {
+    content: '';
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--transparent-bg);
+    position: absolute;
+    border-radius: 0.25em;
+    z-index: -1;
+}
+
+.gameModal-expansion-cart {
+    height: 1em;
+}
+
+.gameModal-expansions-owned.gameModal-expansion-price {
+    display: none;
 }
 
 .gameModal-description {
