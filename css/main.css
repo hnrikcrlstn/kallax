@@ -30,7 +30,8 @@ header {
     z-index: 4000;
 }
 header ul {
-    margin: 0 0 0 var(--header-margin-left);
+    margin: 0 auto;
+    max-width: 1600px;
     padding: 0;
 }
 header > ul li {
