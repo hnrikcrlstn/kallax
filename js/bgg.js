@@ -95,8 +95,8 @@ async function populateGrid(games) {
         gameCell.className = 'game-cell';
         gameCell.id = game.objectid;
         gameCell.setAttribute('data-game-name', game.name.toLowerCase());
-        gameCell.setAttribute('data-score-user' , userScore == "N/A" ? 0 : userScore);
-        gameCell.setAttribute('data-score-bgg' , game.stats.rating.average.value);
+        gameCell.setAttribute('data-score-user' , userScore == "N/A" ? 0 : userScore * 100);
+        gameCell.setAttribute('data-score-bgg' , game.stats.rating.average.value * 100);
         gameCell.setAttribute('data-playtime-min' , game.stats.minplaytime);
         gameCell.setAttribute('data-playtime-max' , game.stats.maxplaytime);
         gameCell.setAttribute('data-players-min', game.stats.minplayers);
