@@ -47,7 +47,7 @@ async function fetchGames() {
     }).done(function(data, statusText, XHR) {
         if (XHR.status == 200) {
             for (let i = 0; i < $.xml2json(data).item.length; i++) {
-                ownedBoardGames.push($.xml2json(data).item[i].objectid);
+                ownedBoardGames.push(parseInt($.xml2json(data).item[i].objectid));
             }
             populateGrid($.xml2json(data));
         } else {
@@ -71,7 +71,7 @@ async function fetchAllExpansions() {
         if (XHR.status == 200) {
             expansions = $.xml2json(data);
             for (let i = 0; i < expansions.item.length; i++) {
-                ownedExpansions.push(expansions.item[i].objectid);
+                ownedExpansions.push(parseInt(expansions.item[i].objectid));
             }
         } else {
             /*
@@ -205,7 +205,7 @@ async function fetchSpecificExpansion(expansions) {
     let x = 0;
     $('.gameModal-loading').fadeIn('1000ms');
     for (const exp of expansions) {
-        if (x > 20 || $('.gameModal-background').attr('data-visible') == "0") {
+        if (x > 50 || $('.gameModal-background').attr('data-visible') == "0" || $('.gameModal-expansion-item').length > 15) {
             break;
         }
         x++;
@@ -276,9 +276,14 @@ function extractKeywords(gameData) {
             }
             mechanicsCounter++;
         } else if (boardLink.type == 'boardgameexpansion') {
-            expansions.push(boardLink.id);
+            expansions.push(parseInt(boardLink.id));
         }
-    }); 
+    });
+    expansions.sort(function (a, b) {
+        if (a > b) return 1;
+        if (a < b) return -1;
+        return 0;
+    });
     return {'keywords' : keywords.join(', '), 'expansions': expansions}
 }
 
@@ -324,10 +329,10 @@ function cleanBadCharacters(name) {
 }
 
 function showExpansionInListing(expansionName) {
-    const ignorableNames = ["promo", "fan exp"];
+    const ignorableNames = ["promo", "fan exp", "mini-tournament"];
     let showExpansion = true;
     for (names of ignorableNames) {
-        if (expansionName.toLowerCase().indexOf(names) > 0) {
+        if (expansionName.toLowerCase().includes(names)) {
             showExpansion = false;
         }
     }
