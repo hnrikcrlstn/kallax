@@ -94,10 +94,13 @@ async function populateGrid(games) {
         let gameCell = document.createElement('div');
         gameCell.className = 'game-cell';
         gameCell.id = game.objectid;
-        gameCell.setAttribute('data-user-score' , userScore == "N/A" ? 0 : userScore);
-        gameCell.setAttribute('data-bgg-score' , game.stats.rating.average.value);
+        gameCell.setAttribute('data-game-name', game.name.toLowerCase());
+        gameCell.setAttribute('data-score-user' , userScore == "N/A" ? 0 : userScore);
+        gameCell.setAttribute('data-score-bgg' , game.stats.rating.average.value);
         gameCell.setAttribute('data-playtime-min' , game.stats.minplaytime);
         gameCell.setAttribute('data-playtime-max' , game.stats.maxplaytime);
+        gameCell.setAttribute('data-players-min', game.stats.minplayers);
+        gameCell.setAttribute('data-players-max', game.stats.maxplayers);
         gameCell.setAttribute('data-random' , Math.floor(Math.random() * 10000));
         gameCell.innerHTML = '<div class="game-name">' +
             '<h3>' + game.name + '</h3>' + 
@@ -154,6 +157,7 @@ async function populateModal(game) {
 }
 
 async function toggleModal(id) {
+    $('.gameModal-expansions .gameModal-expansion-item').remove();
     if ($('.gameModal-background').attr('data-visible') == 0) {
         populateModal(await fetchSpecificGame(id));
     } else {
@@ -197,41 +201,44 @@ async function fetchGamePrice(boardGameId) {
 }
 
 async function fetchSpecificExpansion(expansions) {
-    const delayDuration = expansions.length > 10 ? expansions.length * 500 : expansions.length * 200;
+    const delayDuration = expansions.length > 10 ? expansions.length * 250 : expansions.length * 200;
     let x = 0;
+    $('.gameModal-loading').fadeIn('1000ms');
     for (const exp of expansions) {
-        if (x < 20) {
-            try {
-                const expansionData = await fetchSpecificGame(exp);
-                const expansionPrice = await fetchGamePrice(exp);
-                let expansionName = expansionData.item.name.length > 1 ? expansionData.item.name[0].value : expansionData.item.name.value;
-                expansionName = expansionName.replace($('.gameModal-name').text(), '');
-                expansionName = cleanBadCharacters(expansionName);
-                if (expansionName.toLowerCase().indexOf('promo') <= -1 && expansionName.toLowerCase().indexOf('fan exp') <= -1) {
-                    const expansionCell = $('<div class="gameModal-expansion-item"' + '" id="' + exp + '">' +
-                        '<div class="gameModal-expansion-image-container">' +
-                        '<a href="https://boardgamegeek.com/boardgame/' + expansionData.item.id + '" target="_blank" class="bgg-link">' +
-                        '<img class="gameModal-expansion-image ' +  (ownedExpansions.includes(exp) ? 'gameModal-expansions-owned' : 'gameModal-expansions-notOwned') + '" src="' + (expansionData.item.thumbnail ? expansionData.item.thumbnail : '/img/image-not-found-icon.webp') + '">' +
-                        '</a>' +
-                        '</div>' +
-                        '<a href="https://boardgamegeek.com/boardgame/' + expansionData.item.id + '" target="_blank" class="bgg-link">' +
-                        '<h4 class="gameModal-expansion-name ' +  (ownedExpansions.includes(exp) ? 'gameModal-expansions-owned' : 'gameModal-expansions-notOwned') + '">' + expansionName + '</h4>' +
-                        '</a>' +
-                        '<a target="_blank" class="gameModal-expansion-price' + (ownedExpansions.includes(exp) ? ' gameModal-expansions-owned' : ' gameModal-expansions-notOwned') + (expansionPrice === null ? ' hidden"' : '"') + ' href="' + (expansionPrice === null ? '#' : expansionPrice.url.split('?')[0]) + '">' + (expansionPrice === null ? 'N/A' : '<img src="/img/cart.svg" class="gameModal-expansion-cart"> ' + (expansionPrice.prices.length ? currencyFormat.format(Math.floor(expansionPrice.prices[0].price)) : 'N/A')) + '</a>' +
-                        '</div>');
-                    $('.gameModal-expansions').append(expansionCell);
-                }
-            } catch (error) {
-                console.error('Error fetching expansion data, id: ' + exp + '. ' , error);
-                throw error;
-            }
-            if ($('.gameModal-expansion-item').length) {
-                $('.gameModal-expansion-header').show();
-            };
-            delay(delayDuration);
-            x++;
+        if (x > 20 || $('.gameModal-background').attr('data-visible') == "0") {
+            break;
         }
+        x++;
+        try {
+            const expansionData = await fetchSpecificGame(exp);
+            const expansionPrice = await fetchGamePrice(exp);
+            let expansionName = expansionData.item.name.length > 1 ? expansionData.item.name[0].value : expansionData.item.name.value;
+            expansionName = expansionName.replace($('.gameModal-name').text(), '');
+            expansionName = cleanBadCharacters(expansionName);
+            if (showExpansionInListing(expansionName)) {
+                const expansionCell = $('<div class="gameModal-expansion-item" id="' + exp + '">' +
+                    '<div class="gameModal-expansion-image-container">' +
+                    '<a href="https://boardgamegeek.com/boardgame/' + expansionData.item.id + '" target="_blank" class="bgg-link">' +
+                    '<img class="gameModal-expansion-image ' +  (ownedExpansions.includes(exp) ? 'gameModal-expansions-owned' : 'gameModal-expansions-notOwned') + '" src="' + (expansionData.item.thumbnail ? expansionData.item.thumbnail : '/img/image-not-found-icon.webp') + '">' +
+                    '</a>' +
+                    '</div>' +
+                    '<a href="https://boardgamegeek.com/boardgame/' + expansionData.item.id + '" target="_blank" class="bgg-link">' +
+                    '<h4 class="gameModal-expansion-name ' +  (ownedExpansions.includes(exp) ? 'gameModal-expansions-owned' : 'gameModal-expansions-notOwned') + '">' + expansionName + '</h4>' +
+                    '</a>' +
+                    '<a target="_blank" class="gameModal-expansion-price' + (ownedExpansions.includes(exp) ? ' gameModal-expansions-owned' : ' gameModal-expansions-notOwned') + (expansionPrice === null ? ' hidden"' : '"') + ' href="' + (expansionPrice === null ? '#' : expansionPrice.url.split('?')[0]) + '">' + (expansionPrice === null ? 'N/A' : '<img src="/img/cart.svg" class="gameModal-expansion-cart"> ' + (expansionPrice.prices.length ? currencyFormat.format(Math.floor(expansionPrice.prices[0].price)) : 'N/A')) + '</a>' +
+                    '</div>');
+                $('.gameModal-expansions').append(expansionCell);
+            }
+        } catch (error) {
+            console.error('Error fetching expansion data, id: ' + exp + '. ' , error);
+            throw error;
+        }
+        if ($('.gameModal-expansion-item').length) {
+            $('.gameModal-expansion-header').show();
+        };
+        delay(delayDuration);
     }
+    $('.gameModal-loading').fadeOut('250ms');
 }
 
 async function fetchLastPlayed(boardGameId) {
@@ -297,8 +304,9 @@ function resetModal() {
     setTimeout(function() {
         $('.gameModal-name, .gameModal-description, .gameModal-box .data').text('');
         $('.gameModal-image').attr('src' , '');
-        $('.gameModal-expansions').html('');
+        $('.gameModal-expansions .gameModal-expansion-item').remove();
         $('.gameModal-expansion-header').hide();
+        $('.gameModal-loading').hide();
     }, 300);
 }
 
@@ -315,6 +323,17 @@ function cleanBadCharacters(name) {
     return name;
 }
 
+function showExpansionInListing(expansionName) {
+    const ignorableNames = ["promo", "fan exp"];
+    let showExpansion = true;
+    for (names of ignorableNames) {
+        if (expansionName.toLowerCase().indexOf(names) > 0) {
+            showExpansion = false;
+        }
+    }
+    return showExpansion;
+}
+
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -323,4 +342,80 @@ function decodeEntities(encodedString) {
     var textArea = document.createElement('textarea');
     textArea.innerHTML = encodedString;
     return textArea.value;
+}
+
+function initiateSort(sortBy) {
+    let sortedGames = false;
+    const sortAsc = sortOrderUpdate(sortBy);
+    const sortObj = $('.game-grid').children('.game-cell');
+    switch (sortBy) {
+        case('name'):
+            sortedGames = sortGames(sortObj, 'data-game-name', sortAsc, 'alph');
+            break;
+        case('ranking-bgg'):
+            sortedGames = sortGames(sortObj, 'data-score-bgg', sortAsc, 'num');
+            break;
+        case('ranking-user'):
+            sortedGames = sortGames(sortObj, 'data-score-user', sortAsc, 'num');
+            break;
+        case('random'):
+            sortedGames = sortGames(sortObj, 'data-random', sortAsc, 'num');
+            break;
+        case('playtime'):
+            sortedGames = sortGames(sortObj, 'data-playtime-max', sortAsc, 'num');
+            break;
+        default:
+            filterGames(sortBy);
+    }
+    if (sortedGames) {
+        $('.game-grid').prepend(sortedGames);
+    }
+}
+
+function sortOrderUpdate(sortBy) {
+    if ($('.game-grid').attr('data-sort') == sortBy && $('.game-grid').attr('data-sort-direction') == 'asc') {
+        $('.game-grid').attr('data-sort-direction', 'desc');
+        return false;
+    }
+    $('.game-grid').attr('data-sort' , sortBy);
+    $('.game-grid').attr('data-sort-direction', 'asc');
+    return true;
+}
+
+function sortGames(sortObj, sortAttr, sortDirection, sortType) {
+    let sort = Array.prototype.sort.bind(sortObj);
+    sort(function(a, b) {
+        let gameA = a.getAttribute(sortAttr);
+        let gameB = b.getAttribute(sortAttr);
+
+        if (sortType == 'num') {
+            gameA = parseInt(gameA);
+            gameB = parseInt(gameB);
+        }
+        if (gameA < gameB) {
+            return sortDirection ? 1 : -1;
+        }
+        if (gameA > gameB) {
+            return sortDirection ? -1 : 1;
+        }
+        return 0;
+    })
+    return sortObj
+}
+
+function filterGames(filterBy) {
+    if (filterBy.includes('playcount')) {
+        const numberPlayers = filterBy.split('_')[1];
+        $('header .reset').removeClass('hidden').attr('filtered' , numberPlayers);
+        for (const game of $('.game-grid').children('.game-cell')) {
+            if (numberPlayers == 'more') {
+                $(game).toggle(Number($(game).attr('data-players-max')) > 7);
+            } else {
+                $(game).toggle(Number($(game).attr('data-players-min')) <= numberPlayers && Number($(game).attr('data-players-max')) >= numberPlayers);
+            }
+        }
+    } else {
+        $('.game-grid .game-cell').toggle(true);
+        $('header .reset').addClass('hidden');
+    }
 }

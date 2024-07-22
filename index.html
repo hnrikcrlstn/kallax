@@ -24,14 +24,14 @@
                     <div class="header-sub-menu-background"></div>
                 </label>
                     <ul class="high-score-select header-sub-menu-ul">
-                        <li class="high-score-item header-sub-menu-li">Boardgamegeek</li>
-                        <li class="high-score-item header-sub-menu-li">User ranking</li>                        
+                        <li class="high-score-item header-sub-menu-li" onClick="initiateSort('ranking-bgg')">Boardgamegeek</li>
+                        <li class="high-score-item header-sub-menu-li" onClick="initiateSort('ranking-user')">User ranking</li>
                     </ul>
                     
             </li>
-            <li class="last-played">Last played</li>
-            <li class="random">Randomize</li>
-            <li class="playtime">Playtime</li>
+            <li class="random" onClick="initiateSort('random')">Randomize</li>
+            <li class="playtime" onClick="initiateSort('playtime')">Playtime</li>
+            <li class="name" onClick="initiateSort('name')">By name</li>
             <li class="player-count">
                 <input type="checkbox" class="header-sub-menu-checkbox player-count-show" id="player-count-show">
                 <label for="player-count-show" class="header-sub-menu-label">
@@ -39,23 +39,23 @@
                     <div class="header-sub-menu-background"></div>
                 </label>
                 <ul class="player-count-select header-sub-menu-ul">
-                    <li class="player-count-item header-sub-menu-li">1 Player</li>
-                    <li class="player-count-item header-sub-menu-li">2 Players</li>
-                    <li class="player-count-item header-sub-menu-li">3 Players</li>
-                    <li class="player-count-item header-sub-menu-li">4 Players</li>
-                    <li class="player-count-item header-sub-menu-li">5 Players</li>
-                    <li class="player-count-item header-sub-menu-li">6 Players</li>
-                    <li class="player-count-item header-sub-menu-li">7 Players</li>
-                    <li class="player-count-item header-sub-menu-li">7+ Players</li>
+                    <li class="player-count-item header-sub-menu-li" onClick="initiateSort('playcount_1')">1 Player</li>
+                    <li class="player-count-item header-sub-menu-li" onClick="initiateSort('playcount_2')">2 Players</li>
+                    <li class="player-count-item header-sub-menu-li" onClick="initiateSort('playcount_3')">3 Players</li>
+                    <li class="player-count-item header-sub-menu-li" onClick="initiateSort('playcount_4')">4 Players</li>
+                    <li class="player-count-item header-sub-menu-li" onClick="initiateSort('playcount_5')">5 Players</li>
+                    <li class="player-count-item header-sub-menu-li" onClick="initiateSort('playcount_6')">6 Players</li>
+                    <li class="player-count-item header-sub-menu-li" onClick="initiateSort('playcount_7')">7 Players</li>
+                    <li class="player-count-item header-sub-menu-li" onClick="initiateSort('playcount_more')">7+ Players</li>
                 </ul>
             </li>
-            <li class="blast-from-the-past">Long time no play</li>
+            <li class="reset hidden" onClick="initiateSort('reset')">Reset filter</li>
         </ul>
     </header>
 
     <!-- To be populated from /js/bgg.js -->
     <main>
-        <div class="game-grid"></div>
+        <div class="game-grid" data-sort="name" data-sort-direction="asc"></div>
     </main>
 
     <!-- Structure for the modal, with no game data -->
@@ -103,7 +103,13 @@
                 <h4>Expansions</h4>
             </div>
             <div class="gameModal-expansions">
-
+                <div class="gameModal-loading">
+                    <span class="bar1"></span>
+                    <span class="bar2"></span>
+                    <span class="bar3"></span>
+                    <span class="bar4"></span>
+                    <span class="bar5"></span>
+                </div>
             </div>
             <p class="gameModal-description"></p>
         </div>

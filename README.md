@@ -17,7 +17,10 @@ In `js/bgg.js`, replace `bggUserName` with your username from Boardgamegeek.
 - [x] Fetch and display play dates
 - [x] Show owned expansions
 - [x] Show not owned expansions
+- [x] Show loading spinner while expansions is being fetched
 - [x] Show lowest available price for expansions not currently owned
-- [ ] Add sorting and filtering
+- [x] Add sorting and filtering
 - [ ] Show recommendations for new games
+- [ ] Mobile styling
+- [ ] Slider for expansions in game modal
 - [ ] Fetch play dates on whole collection without overloading BGG API

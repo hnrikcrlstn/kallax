@@ -39,12 +39,12 @@ header > ul li {
     min-width: 1rem;
     margin-right: 0.5rem;
     padding-left: 0.5rem;
-    cursor: not-allowed;
+    cursor: pointer;
     position: relative;
 }
 
 header label {
-    cursor: not-allowed;
+    cursor: pointer;
 }
 .header-sub-menu-ul {
     position: absolute;
@@ -81,6 +81,14 @@ header label {
 }
 .header-sub-menu-checkbox {
     display: none;
+}
+
+li.reset {
+    position: relative;
+}
+li.reset::after {
+    content: ' (' attr(filtered) ' players)';
+    display: inline;
 }
 main {
     max-width: 1600px;
@@ -133,6 +141,9 @@ footer {
     height: auto;
     width: auto;
     object-fit: contain;
+}
+.game-cover img.lazyloading, .game-cover img.lazyload {
+    width: 100%;
 }
 .game-cover-image {
     display: flex;
@@ -296,8 +307,65 @@ footer {
     align-items: flex-start;
     flex-wrap: nowrap;
     gap: 1em;
+    position: relative;
+    scrollbar-width: none;
 }
 
+.gameModal-loading {
+    position: absolute;
+    display: none;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: max-content;
+    --animation-time: 1500ms;
+    --animation-delay: calc(var(--animation-time) / 10);
+    z-index: 5;
+}
+
+.gameModal-loading > span {
+    display: inline-block;
+    background: var(--main-bg-clr);
+    height: 2.5rem;
+    width: 0.75rem;
+    margin: 0.125rem;
+    border-radius: 0.125rem;
+    animation: loading-bars;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-duration: var(--animation-time);
+}
+.gameModal-loading .bar1 {
+    animation-delay: var(--animation-delay);
+}
+
+.gameModal-loading .bar2 {
+    animation-delay: calc(2 * var(--animation-delay));
+}
+
+.gameModal-loading .bar3 {
+    animation-delay: calc(3 * var(--animation-delay));
+}
+
+.gameModal-loading .bar4 {
+    animation-delay: calc(4 * var(--animation-delay));
+}
+
+.gameModal-loading .bar5 {
+    animation-delay: calc(5 * var(--animation-delay));
+}
+
+@keyframes loading-bars {
+    0% {
+        transform: scale(1, 1);
+    }
+    20% {
+        transform: scale(1.1, 2);
+    }
+    40% {
+        transform: scale(1, 1);
+    }
+}
 .gameModal-expansion-item {
     max-width: 30%;
     max-height: 200px;
