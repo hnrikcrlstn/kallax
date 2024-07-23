@@ -1,8 +1,10 @@
 :root {
     --header-height: 2rem;
     --header-margin-left: 2rem;
-    --main-bg-clr: #FFC107;
+    --main-bg-clr: #eac435;
+    --header-second-clr: #345995;
     --header-bg-clr: #2b852e;
+    --header-active-clr: #92140c;
     --score-gradient-padding: 85px;
     --transparent-bg: rgba(0,0,0,0.8);
 }
@@ -38,14 +40,25 @@ header > ul li {
     display: inline-block;
     list-style: none;
     min-width: 1rem;
-    margin-right: 0.5rem;
+    padding-right: 0.5rem;
     padding-left: 0.5rem;
     cursor: pointer;
     position: relative;
 }
+.nav-toggle {
+    display: none;
+}
 
-header label {
+.nav-active {
+    background: transparent;
+}
+.nav-background {
+    display: none;
+}
+header .nav-ul label {
     cursor: pointer;
+    display: block;
+    padding: 0 0.5em;
 }
 .header-sub-menu-ul {
     position: absolute;
@@ -98,15 +111,13 @@ main {
 
 footer {
     z-index: 55555;
+    max-width: 1600px;
+    margin: 0 auto;
 }
 
 .output {
     border: 2px solid black;
     padding: 2em;
-}
-
-.hidden {
-    display: none;
 }
 
 .game-grid {
@@ -447,9 +458,6 @@ footer {
 }
 
 @media screen and (max-width: 1000px){
-    header {
-        display: none;
-    }
     .game-grid {
         grid-template-columns: auto auto;
         justify-content: space-evenly;
@@ -472,7 +480,100 @@ footer {
     }
 }
 
-@media screen and (max-width: 600px){
+@media screen and (max-width: 768px) {
+    header {
+        margin: 0;
+        width: 100vw;
+    }
+    header > ul li {
+        padding: 0;
+    }
+    .nav-hamburger-bar1,
+    .nav-hamburger-bar2,
+    .nav-hamburger-bar3 {
+        width: 30px;
+        height: 3px;
+        background: var(--main-bg-clr);
+        margin: 0.25em 0 0.25em 0.5em;
+        transition: 400ms;
+        border-radius: 20%;
+        display: block;
+    }
+    .nav-hamburger-bar1 {
+        margin-top: 0.5em;
+    }
+    .nav-hamburger-bar2 {
+        height: 2px;
+        width: 26px;
+        margin-left: calc(0.5em + 2px);
+    }
+    .nav-toggle:checked+.nav-label .nav-hamburger-bar1 {
+        transform: rotate(-45deg) translate(-4px, 5px);
+    }
+    .nav-toggle:checked+.nav-label .nav-hamburger-bar1,
+    .nav-toggle:checked+.nav-label .nav-hamburger-bar3 {
+        width: calc(var(--header-height) / 2);
+    }
+    .nav-toggle:checked+.nav-label .nav-hamburger-bar2 {
+        opacity: 0;
+    }
+    .nav-toggle:checked+.nav-label .nav-hamburger-bar3 {
+        transform: rotate(45deg) translate(-4px, -5px);
+    }
+    .nav-ul {
+        max-height: calc(100vh - 3rem);
+        overflow: auto;
+        background: var(--header-second-clr);
+    }
+    .nav-ul  .nav-header, .nav-ul .reset {
+        padding-left: 0.5em;
+    }
+    .nav-active {
+        background-color: var(--header-active-clr);
+    }
+    .nav-toggle~.nav-ul {
+        display: none;
+        animation: nav-sidepull;
+        animation-duration: 400ms;
+        animation-direction: alternate;
+        animation-timing-function: ease-in-out;
+        animation-iteration-count: 1;
+        animation-fill-mode: forwards;
+        position: relative;
+    }
+    .nav-toggle:checked~.nav-ul, .nav-toggle:checked~.nav-ul .header-sub-menu-label, .nav-toggle:checked~.nav-ul li {
+        display: block;
+        width: 100%;
+    }
+    .nav-toggle:checked+.nav-label .nav-background {
+        display: block;
+        height: 100vh;
+        width: 100vw;
+        background: var(--transparent-bg);
+        z-index: -1;
+        position: fixed;
+    }
+    .nav-label {
+        color: var(--font-clr-light);
+        background: var(--header-bg-clr);
+        font-size: 1rem;
+        display: block;
+        width: 100vw;
+        float: right;
+        cursor: pointer;
+        height: 2rem;
+    }
+    .header-sub-menu-ul {
+        position: static;
+    }
+    .header-sub-menu-li {
+        padding-left: 1.5em;
+        position: relative;
+    }
+    .header-sub-menu-li:before {
+        content: '◉';
+        padding-right: 0.5em;
+    }
     .game-grid {
         grid-template-columns: auto;
         justify-content: center;
@@ -525,5 +626,24 @@ footer {
 
     .gameModal-keywords {
         grid-area: keyWord;
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+
+@keyframes nav-sidepull {
+    0% {
+        left: -100vw;
+    }
+    70% {
+        left: 5em;
+    }
+    90% {
+        left: -2em;
+    }
+    100% {
+        left: 0;
     }
 }

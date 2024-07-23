@@ -16,37 +16,43 @@
 </head>
 <body>
     <header>
-        <ul>
+        <input type="checkbox" class="nav-toggle" id="nav-toggle">
+        <label class="nav-label" for="nav-toggle">
+            <span class="nav-hamburger-bar1"></span>
+            <span class="nav-hamburger-bar2"></span>
+            <span class="nav-hamburger-bar3"></span>
+            <div class="nav-background"></div>
+        </label>
+        <ul class="nav-ul">
             <li class="high-score">
                 <input type="checkbox" class="header-sub-menu-checkbox high-score-show" id="high-score-show">
-                <label for="high-score-show" class="header-sub-menu-label">
+                <label for="high-score-show" class="header-sub-menu-label ranking-bgg ranking-user nav-header sort">
                     High scores
                     <div class="header-sub-menu-background"></div>
                 </label>
                     <ul class="high-score-select header-sub-menu-ul">
-                        <li class="high-score-item header-sub-menu-li" onClick="initiateSort('ranking-bgg')">Boardgamegeek</li>
-                        <li class="high-score-item header-sub-menu-li" onClick="initiateSort('ranking-user')">User ranking</li>
+                        <li class="sort ranking-bgg header-sub-menu-li" onClick="initiateSort('ranking-bgg')">Boardgamegeek</li>
+                        <li class="sort ranking-user header-sub-menu-li" onClick="initiateSort('ranking-user')">User ranking</li>
                     </ul>
-                    
             </li>
-            <li class="random" onClick="initiateSort('random')">Randomize</li>
-            <li class="playtime" onClick="initiateSort('playtime')">Playtime</li>
-            <li class="name" onClick="initiateSort('name')">By name</li>
+            <li class="sort random nav-header" onClick="initiateSort('random')">Randomize</li>
+            <li class="sort playtime nav-header" onClick="initiateSort('playtime')">Playtime</li>
+            <li class="sort name nav-header nav-active" onClick="initiateSort('name')">By name</li>
             <li class="player-count">
                 <input type="checkbox" class="header-sub-menu-checkbox player-count-show" id="player-count-show">
-                <label for="player-count-show" class="header-sub-menu-label">
+                <label for="player-count-show" class="header-sub-menu-label nav-header filter">
                     Player Count
                     <div class="header-sub-menu-background"></div>
                 </label>
                 <ul class="player-count-select header-sub-menu-ul">
-                    <li class="player-count-item header-sub-menu-li" onClick="initiateSort('playcount_1')">1 Player</li>
-                    <li class="player-count-item header-sub-menu-li" onClick="initiateSort('playcount_2')">2 Players</li>
-                    <li class="player-count-item header-sub-menu-li" onClick="initiateSort('playcount_3')">3 Players</li>
-                    <li class="player-count-item header-sub-menu-li" onClick="initiateSort('playcount_4')">4 Players</li>
-                    <li class="player-count-item header-sub-menu-li" onClick="initiateSort('playcount_5')">5 Players</li>
-                    <li class="player-count-item header-sub-menu-li" onClick="initiateSort('playcount_6')">6 Players</li>
-                    <li class="player-count-item header-sub-menu-li" onClick="initiateSort('playcount_7')">7 Players</li>
-                    <li class="player-count-item header-sub-menu-li" onClick="initiateSort('playcount_more')">7+ Players</li>
+                    <li class="filter player-count-item header-sub-menu-li playcount_1" onClick="initiateSort('playcount_1')">1 Player</li>
+                    <li class="filter player-count-item header-sub-menu-li playcount_2" onClick="initiateSort('playcount_2')">2 Players</li>
+                    <li class="filter player-count-item header-sub-menu-li playcount_3" onClick="initiateSort('playcount_3')">3 Players</li>
+                    <li class="filter player-count-item header-sub-menu-li playcount_4" onClick="initiateSort('playcount_4')">4 Players</li>
+                    <li class="filter player-count-item header-sub-menu-li playcount_5" onClick="initiateSort('playcount_5')">5 Players</li>
+                    <li class="filter player-count-item header-sub-menu-li playcount_6" onClick="initiateSort('playcount_6')">6 Players</li>
+                    <li class="filter player-count-item header-sub-menu-li playcount_7" onClick="initiateSort('playcount_7')">7 Players</li>
+                    <li class="filter player-count-item header-sub-menu-li playcount_more" onClick="initiateSort('playcount_more')">7+ Players</li>
                 </ul>
             </li>
             <li class="reset hidden" onClick="initiateSort('reset')">Reset filter</li>

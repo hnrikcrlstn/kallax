@@ -1,5 +1,9 @@
 /* Change this var to your Boardgamegeek username */
 var bggUserName = 'hcarl';
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('user')) {
+    bggUserName = urlParams.get('user');
+}
 
 /* Global variables related to sending boardgamedata between functions */
 var ownedExpansions = new Array();
@@ -30,7 +34,7 @@ $(document).on('click', '.gameModal-background, .gameModal-close', function(e) {
         resetModal();
     }
 });
-$(document).on('click', '.header-sub-menu-checkbox', function() {
+$(document).on('click', '.header-sub-menu-checkbox, .reset', function() {
     if ($(this).prop('checked')) {
         $('.header-sub-menu-checkbox').prop('checked', false);
         $(this).prop('checked', true);
@@ -133,8 +137,7 @@ async function populateModal(game) {
         $('.gameModal-players .data').text(game.item.minplayers.value);
     } else {
         /* If not fixed player count, fetch recommended player count */
-        let bestPlayerCount = fetchPlayerCount(game.item);
-        $('.gameModal-players .data').text(game.item.minplayers.value + '-' + game.item.maxplayers.value + ' (best at ' + bestPlayerCount + ')');
+        $('.gameModal-players .data').text(game.item.minplayers.value + '-' + game.item.maxplayers.value + ' (best at ' + fetchPlayerCount(game.item) + ')');
     }
     if (game.item.minplaytime.value == game.item.maxplaytime.value) {
         $('.gameModal-time .data').text(game.item.minplaytime.value + ' min');
@@ -304,7 +307,7 @@ function fetchPlayerCount(item) {
 
 function resetModal() {
     $('.gameModal-background').attr('data-visible' , 0);
-    $('.gameModal-background').fadeOut('150ms');
+    $('.gameModal-background').fadeOut('50ms');
     setTimeout(function() {
         $('.gameModal-name, .gameModal-description, .gameModal-box .data').text('');
         $('.gameModal-image').attr('src' , '');
@@ -373,6 +376,9 @@ function initiateSort(sortBy) {
     }
     if (sortedGames) {
         $('.game-grid').prepend(sortedGames);
+        $('header li.sort, header label.sort').each(function() {
+            $(this).toggleClass('nav-active', $(this).hasClass(sortBy));
+        })
     }
 }
 
@@ -391,7 +397,6 @@ function sortGames(sortObj, sortAttr, sortDirection, sortType) {
     sort(function(a, b) {
         let gameA = a.getAttribute(sortAttr);
         let gameB = b.getAttribute(sortAttr);
-
         if (sortType == 'num') {
             gameA = parseInt(gameA);
             gameB = parseInt(gameB);
@@ -408,18 +413,25 @@ function sortGames(sortObj, sortAttr, sortDirection, sortType) {
 }
 
 function filterGames(filterBy) {
+    $('header li.filter').each(function() {
+        $(this).toggleClass('nav-active', $(this).hasClass(filterBy));
+    })
     if (filterBy.includes('playcount')) {
+        $('header .player-count label').addClass('nav-active');
         const numberPlayers = filterBy.split('_')[1];
-        $('header .reset').removeClass('hidden').attr('filtered' , numberPlayers);
-        for (const game of $('.game-grid').children('.game-cell')) {
-            if (numberPlayers == 'more') {
-                $(game).toggle(Number($(game).attr('data-players-max')) > 7);
-            } else {
-                $(game).toggle(Number($(game).attr('data-players-min')) <= numberPlayers && Number($(game).attr('data-players-max')) >= numberPlayers);
+        if (numberPlayers != $('header .reset').attr('filtered')) {
+            $('header .reset').removeClass('hidden').attr('filtered' , numberPlayers);
+            for (const game of $('.game-grid').children('.game-cell')) {
+                if (numberPlayers == 'more') {
+                    $(game).toggle(Number($(game).attr('data-players-max')) > 7);
+                } else {
+                    $(game).toggle(Number($(game).attr('data-players-min')) <= numberPlayers && Number($(game).attr('data-players-max')) >= numberPlayers);
+                }
             }
         }
     } else {
         $('.game-grid .game-cell').toggle(true);
+        $('header .player-count label').removeClass('nav-active');
         $('header .reset').addClass('hidden');
     }
 }
