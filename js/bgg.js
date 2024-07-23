@@ -156,7 +156,7 @@ async function populateModal(game) {
     $('.gameModal-keywords .data').text(gameLinkData.keywords);
     $('.gameModal-background').attr('data-visible' , 1).fadeIn('150ms');
     if (gameLinkData.expansions.length > 0) {
-        fetchSpecificExpansion(gameLinkData.expansions);
+        fetchExpansionData(gameLinkData.expansions);
     }
 }
 
@@ -204,31 +204,28 @@ async function fetchGamePrice(boardGameId) {
     }
 }
 
-async function fetchSpecificExpansion(expansions) {
-    const delayDuration = expansions.length > 10 ? expansions.length * 250 : expansions.length * 150;
-    let x = 0;
+async function fetchExpansionData(expansions) {
+    const expansionData = await fetchSpecificGame(expansions.join(','));
     $('.gameModal-loading').fadeIn('1000ms');
-    for (const exp of expansions) {
-        if (x > 50 || $('.gameModal-background').attr('data-visible') == "0" || $('.gameModal-expansion-item').length > 15) {
+    for (const exp of expansionData.item) {
+        if ($('.gameModal-background').attr('data-visible') == "0" || $('.gameModal-expansion-item').length > 15) {
             break;
         }
-        x++;
         try {
-            const expansionData = await fetchSpecificGame(exp);
-            let expansionName = expansionData.item.name.length > 1 ? expansionData.item.name[0].value : expansionData.item.name.value;
+            let expansionName = exp.name.length > 1 ? exp.name[0].value : exp.name.value;
             expansionName = cleanBadCharacters(expansionName.replace($('.gameModal-name').text(), ''));
             if (showExpansionInListing(expansionName)) {
-                const expansionPrice = ownedExpansions.includes(exp) ? null : await fetchGamePrice(exp);
-                const expansionCell = $('<div class="gameModal-expansion-item" id="' + exp + '">' +
+                const expansionPrice = ownedExpansions.includes(Number(exp.id)) ? null : await fetchGamePrice(exp.id);
+                const expansionCell = $('<div class="gameModal-expansion-item" id="' + exp.id + '">' +
                     '<div class="gameModal-expansion-image-container">' +
-                    '<a href="https://boardgamegeek.com/boardgame/' + expansionData.item.id + '" target="_blank" class="bgg-link">' +
-                    '<img class="gameModal-expansion-image ' +  (ownedExpansions.includes(exp) ? 'gameModal-expansions-owned' : 'gameModal-expansions-notOwned') + '" src="' + (expansionData.item.thumbnail ? expansionData.item.thumbnail : '/img/image-not-found-icon.webp') + '">' +
+                    '<a href="https://boardgamegeek.com/boardgame/' + exp.id + '" target="_blank" class="bgg-link">' +
+                    '<img class="gameModal-expansion-image ' +  (ownedExpansions.includes(Number(exp.id)) ? 'gameModal-expansions-owned' : 'gameModal-expansions-notOwned') + '" src="' + (exp.thumbnail ? exp.thumbnail : '/img/image-not-found-icon.webp') + '">' +
                     '</a>' +
                     '</div>' +
-                    '<a href="https://boardgamegeek.com/boardgame/' + expansionData.item.id + '" target="_blank" class="bgg-link">' +
-                    '<h4 class="gameModal-expansion-name ' +  (ownedExpansions.includes(exp) ? 'gameModal-expansions-owned' : 'gameModal-expansions-notOwned') + '">' + expansionName + '</h4>' +
+                    '<a href="https://boardgamegeek.com/boardgame/' + exp.id + '" target="_blank" class="bgg-link">' +
+                    '<h4 class="gameModal-expansion-name ' +  (ownedExpansions.includes(Number(exp.id)) ? 'gameModal-expansions-owned' : 'gameModal-expansions-notOwned') + '">' + expansionName + '</h4>' +
                     '</a>' +
-                    '<a target="_blank" class="gameModal-expansion-price' + (ownedExpansions.includes(exp) ? ' gameModal-expansions-owned' : ' gameModal-expansions-notOwned') + (expansionPrice === null ? ' hidden"' : '"') + ' href="' + (expansionPrice === null ? '#' : expansionPrice.url.split('?')[0]) + '">' + (expansionPrice === null ? 'N/A' : '<img src="/img/cart.svg" class="gameModal-expansion-cart"> ' + (expansionPrice.prices.length ? currencyFormat.format(Math.floor(expansionPrice.prices[0].price)) : 'N/A')) + '</a>' +
+                    '<a target="_blank" class="gameModal-expansion-price' + (ownedExpansions.includes(Number(exp.id)) ? ' gameModal-expansions-owned' : ' gameModal-expansions-notOwned') + (expansionPrice === null ? ' hidden"' : '"') + ' href="' + (expansionPrice === null ? '#' : expansionPrice.url.split('?')[0]) + '">' + (expansionPrice === null ? 'N/A' : '<img src="/img/cart.svg" class="gameModal-expansion-cart"> ' + (expansionPrice.prices.length ? currencyFormat.format(Math.floor(expansionPrice.prices[0].price)) : 'N/A')) + '</a>' +
                     '</div>');
                 $('.gameModal-expansions').append(expansionCell);
             }
@@ -239,7 +236,6 @@ async function fetchSpecificExpansion(expansions) {
         if ($('.gameModal-expansion-item').length) {
             $('.gameModal-expansion-header').show();
         };
-        delay(delayDuration);
     }
     $('.gameModal-loading').fadeOut('250ms');
 }
