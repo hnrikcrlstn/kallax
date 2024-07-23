@@ -201,7 +201,7 @@ async function fetchGamePrice(boardGameId) {
 }
 
 async function fetchSpecificExpansion(expansions) {
-    const delayDuration = expansions.length > 10 ? expansions.length * 250 : expansions.length * 200;
+    const delayDuration = expansions.length > 10 ? expansions.length * 250 : expansions.length * 150;
     let x = 0;
     $('.gameModal-loading').fadeIn('1000ms');
     for (const exp of expansions) {
@@ -211,11 +211,10 @@ async function fetchSpecificExpansion(expansions) {
         x++;
         try {
             const expansionData = await fetchSpecificGame(exp);
-            const expansionPrice = await fetchGamePrice(exp);
             let expansionName = expansionData.item.name.length > 1 ? expansionData.item.name[0].value : expansionData.item.name.value;
-            expansionName = expansionName.replace($('.gameModal-name').text(), '');
-            expansionName = cleanBadCharacters(expansionName);
+            expansionName = cleanBadCharacters(expansionName.replace($('.gameModal-name').text(), ''));
             if (showExpansionInListing(expansionName)) {
+                const expansionPrice = ownedExpansions.includes(exp) ? null : await fetchGamePrice(exp);
                 const expansionCell = $('<div class="gameModal-expansion-item" id="' + exp + '">' +
                     '<div class="gameModal-expansion-image-container">' +
                     '<a href="https://boardgamegeek.com/boardgame/' + expansionData.item.id + '" target="_blank" class="bgg-link">' +
