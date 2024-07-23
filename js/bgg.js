@@ -88,6 +88,7 @@ async function fetchAllExpansions() {
 }
 
 async function populateGrid(games) {
+    $('.game-grid-loading').fadeOut();
     /* Create a new game cell for each game in collection */
     for (const game of games.item) {
         /* Handle single data (only 2 players, only 30 min playtimes) responses */
