@@ -1,5 +1,6 @@
 # Kallax
 A way to display your boardgame collection with data straight from [Boardgamegeek](https://boardgamegeek.com).
+Set the default username in `js/bgg.js` or use `?user=[username]` as a URL-parameter
 
 ## Installation
 In `js/bgg.js`, replace `bggUserName` with your username from Boardgamegeek.
@@ -20,7 +21,7 @@ In `js/bgg.js`, replace `bggUserName` with your username from Boardgamegeek.
 - [x] Show loading spinner while expansions is being fetched
 - [x] Show lowest available price for expansions not currently owned
 - [x] Add sorting and filtering
+- [x] Mobile styling
 - [ ] Show recommendations for new games
-- [ ] Mobile styling
 - [ ] Slider for expansions in game modal
 - [ ] Fetch play dates on whole collection without overloading BGG API
