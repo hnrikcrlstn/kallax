@@ -1,6 +1,8 @@
 # Kallax
 A way to display your boardgame collection with data straight from [Boardgamegeek](https://boardgamegeek.com).
-Set the default username in `js/bgg.js` or use `?user=[username]` as a URL-parameter
+Set the default username in `js/bgg.js` or use `?user=[username]` as a URL-parameter.
+
+[Preview](https://kallax.carlstein.dev)
 
 ## Installation
 In `js/bgg.js`, replace `bggUserName` with your username from Boardgamegeek.
@@ -13,7 +15,7 @@ In `js/bgg.js`, replace `bggUserName` with your username from Boardgamegeek.
 * [Brädspelspriser API](https://bradspelspriser.se/api/plugin)
 * [jQuery](https://jquery.com/)
 
-### To dos
+## To dos
 - [x] List a whole collection
 - [x] Fetch and display play dates
 - [x] Show owned expansions
