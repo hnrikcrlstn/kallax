@@ -21,7 +21,7 @@ const currencyFormat = new Intl.NumberFormat('sv-SE', {
 
 /* Fetch game collection when page has loaded */
 $(document).ready(function() {
-    fetchGames();
+    fetchAllGames();
     fetchAllExpansions();
 })
 
@@ -42,7 +42,7 @@ $(document).on('click', '.header-sub-menu-checkbox, .reset', function() {
 });
 
 /* This fetches all base game, which will be displayed in the grid */
-async function fetchGames() {
+async function fetchAllGames() {
     $.ajax({
         url: api_url + 'collection?username=' + bggUserName + '&stats=1&excludesubtype=boardgameexpansion',
         dataType: 'text',
@@ -59,7 +59,7 @@ async function fetchGames() {
             Sometimes BGG needs to rebuild their cache with a user collection
             This makes sure the collection is fetched without sending too many request to the BGG API 
             */
-            const timeOut = setTimeout(fetchGames, 500)
+            const timeOut = setTimeout(fetchAllGames, 500)
         }
     })
 }
@@ -88,7 +88,7 @@ async function fetchAllExpansions() {
 }
 
 async function populateGrid(games) {
-    $('.game-grid-loading').fadeOut();
+    $('.game-grid-loading').fadeOut('fast');
     /* Create a new game cell for each game in collection */
     for (const game of games.item) {
         /* Handle single data (only 2 players, only 30 min playtimes) responses */
@@ -132,57 +132,57 @@ async function populateGrid(games) {
 }
 
 async function populateModal(game) {
-    const gameLinkData =  extractKeywords(game.item);
+    const gameLinkData =  extractKeywords(game[0]);
     /* Recommended player counts */
-    if (game.item.minplayers.value == game.item.maxplayers.value) {
-        $('.gameModal-players .data').text(game.item.minplayers.value);
+    if (game[0].minplayers.value == game[0].maxplayers.value) {
+        $('.gameModal-players .data').text(game[0].minplayers.value);
     } else {
         /* If not fixed player count, fetch recommended player count */
-        $('.gameModal-players .data').text(game.item.minplayers.value + '-' + game.item.maxplayers.value + ' (best at ' + fetchPlayerCount(game.item) + ')');
+        $('.gameModal-players .data').text(game[0].minplayers.value + '-' + game[0].maxplayers.value + ' (best at ' + fetchPlayerCount(game[0]) + ')');
     }
-    if (game.item.minplaytime.value == game.item.maxplaytime.value) {
-        $('.gameModal-time .data').text(game.item.minplaytime.value + ' min');
+    if (game[0].minplaytime.value == game[0].maxplaytime.value) {
+        $('.gameModal-time .data').text(game[0].minplaytime.value + ' min');
     } else {
-        $('.gameModal-time .data').text(game.item.minplaytime.value + '-' + game.item.maxplaytime.value + ' min (avg ' + game.item.playingtime.value + ' min)');
+        $('.gameModal-time .data').text(game[0].minplaytime.value + '-' + game[0].maxplaytime.value + ' min (avg ' + game[0].playingtime.value + ' min)');
     }
-    $('.gameModal-box a.bgg-link').attr({'href': 'https://boardgamegeek.com/boardgame/' + game.item.id , 'target': '_blank'});
-    $('.gameModal-name').text(game.item.name.length > 1 ? game.item.name[0].value : game.item.name.value );
-    $('.gameModal-description').text(decodeEntities(game.item.description));
-    $('.gameModal-image').attr('src', (game.item.image != 'undefined' ? game.item.image : '#'));
-    $('.gameModal-weight .data').text((game.item.statistics.ratings.averageweight.value * 1).toFixed(2));
-    $('.gameModal-score-player .data').text(document.getElementById(game.item.id).getAttribute('data-user-score'));
-    $('.gameModal-score-bgg .data').text((game.item.statistics.ratings.average.value * 1).toFixed(2));
-    $('.gameModal-last-played .data').text(await fetchLastPlayed(game.item.id));
+    $('.gameModal-box a.bgg-link').attr({'href': 'https://boardgamegeek.com/boardgame/' + game[0].id , 'target': '_blank'});
+    $('.gameModal-name').text(game[0].name.length > 1 ? game[0].name[0].value : game[0].name.value );
+    $('.gameModal-description').text(decodeString(game[0].description));
+    $('.gameModal-image').attr('src', (game[0].image != 'undefined' ? game[0].image : '#'));
+    $('.gameModal-weight .data').text((game[0].statistics.ratings.averageweight.value * 1).toFixed(2));
+    $('.gameModal-score-player .data').text(document.getElementById(game[0].id).getAttribute('data-user-score'));
+    $('.gameModal-score-bgg .data').text((game[0].statistics.ratings.average.value * 1).toFixed(2));
+    $('.gameModal-last-played .data').text(await fetchLastPlayed(game[0].id));
     $('.gameModal-keywords .data').text(gameLinkData.keywords);
     $('.gameModal-background').attr('data-visible' , 1).fadeIn('150ms');
     if (gameLinkData.expansions.length > 0) {
-        fetchExpansionData(gameLinkData.expansions);
+        $('.gameModal-loading').fadeIn('500ms');
+        populateExpansions(gameLinkData.expansions);
     }
 }
 
-async function toggleModal(id) {
-    $('.gameModal-expansions .gameModal-expansion-item').remove();
-    if ($('.gameModal-background').attr('data-visible') == 0) {
-        populateModal(await fetchSpecificGame(id));
-    } else {
-        resetModal();
+/* Fetch all data on specific game or games */
+async function fetchSpecificGames(boardGameId) {
+    let result = new Array();
+    result.item = new Array()
+    let x = 0;
+    while (x <= boardGameId.length) {
+        try {
+            const partResult = $.xml2json(await $.ajax({
+                url: api_url + '/thing?id=' + boardGameId.slice(x, x + 20) + '&stats=1',
+                dataType: 'text',
+                type: 'GET',
+                crossDomain: true
+            }));
+            result.item.push(partResult.item);
+        } catch(error) {
+            console.error('Error from fetchSpecificGames, id: ' + boardGameId.slice(x, x + 20) + '. ' , error);
+            throw error;
+        }
+        x += 20;
+        delay(200);
     }
-}
-
-/* Fetch all data on specific game */
-async function fetchSpecificGame(boardGameId) {
-    try {
-        const result = $.xml2json(await $.ajax({
-            url: api_url + '/thing?id=' + boardGameId + '&stats=1',
-            dataType: 'text',
-            type: 'GET',
-            crossDomain: true
-        }));
-        return result;
-    } catch(error) {
-        console.error('Error from fetchSpecificGame, id: ' + boardGameId + '. ' , error);
-        throw error;
-    }
+    return result.item.flat();
 }
 
 async function fetchGamePrice(boardGameId) {
@@ -204,33 +204,33 @@ async function fetchGamePrice(boardGameId) {
     }
 }
 
-async function fetchExpansionData(expansions) {
-    const expansionData = await fetchSpecificGame(expansions.join(','));
-    $('.gameModal-loading').fadeIn('1000ms');
-    for (const exp of expansionData.item) {
-        if ($('.gameModal-background').attr('data-visible') == "0" || $('.gameModal-expansion-item').length > 15) {
+async function populateExpansions(allExpansionsIds) {
+    const rawExpansionData = await fetchSpecificGames(allExpansionsIds);
+    let expansionData = Array.isArray(rawExpansionData) ? rawExpansionData : [rawExpansionData];
+    for (const currentExpansion of expansionData) {
+        if ($('.gameModal-background').attr('data-visible') == "0") {
             break;
         }
         try {
-            let expansionName = exp.name.length > 1 ? exp.name[0].value : exp.name.value;
+            let expansionName = currentExpansion.name.length > 1 ? currentExpansion.name[0].value : currentExpansion.name.value;
             expansionName = cleanBadCharacters(expansionName.replace($('.gameModal-name').text(), ''));
             if (showExpansionInListing(expansionName)) {
-                const expansionPrice = ownedExpansions.includes(Number(exp.id)) ? null : await fetchGamePrice(exp.id);
-                const expansionCell = $('<div class="gameModal-expansion-item" id="' + exp.id + '">' +
+                const expansionPrice = ownedExpansions.includes(Number(currentExpansion.id)) ? null : await fetchGamePrice(currentExpansion.id);
+                const expansionCell = $('<div class="gameModal-expansion-item" id="' + currentExpansion.id + '">' +
                     '<div class="gameModal-expansion-image-container">' +
-                    '<a href="https://boardgamegeek.com/boardgame/' + exp.id + '" target="_blank" class="bgg-link">' +
-                    '<img class="gameModal-expansion-image ' +  (ownedExpansions.includes(Number(exp.id)) ? 'gameModal-expansions-owned' : 'gameModal-expansions-notOwned') + '" src="' + (exp.thumbnail ? exp.thumbnail : '/img/image-not-found-icon.webp') + '">' +
+                    '<a href="https://boardgamegeek.com/boardgame/' + currentExpansion.id + '" target="_blank" class="bgg-link">' +
+                    '<img class="gameModal-expansion-image ' +  (ownedExpansions.includes(Number(currentExpansion.id)) ? 'gameModal-expansions-owned' : 'gameModal-expansions-notOwned') + '" src="' + (currentExpansion.thumbnail ? currentExpansion.thumbnail : '/img/image-not-found-icon.webp') + '">' +
                     '</a>' +
                     '</div>' +
-                    '<a href="https://boardgamegeek.com/boardgame/' + exp.id + '" target="_blank" class="bgg-link">' +
-                    '<h4 class="gameModal-expansion-name ' +  (ownedExpansions.includes(Number(exp.id)) ? 'gameModal-expansions-owned' : 'gameModal-expansions-notOwned') + '">' + expansionName + '</h4>' +
+                    '<a href="https://boardgamegeek.com/boardgame/' + currentExpansion.id + '" target="_blank" class="bgg-link">' +
+                    '<h4 class="gameModal-expansion-name ' +  (ownedExpansions.includes(Number(currentExpansion.id)) ? 'gameModal-expansions-owned' : 'gameModal-expansions-notOwned') + '">' + expansionName + '</h4>' +
                     '</a>' +
-                    '<a target="_blank" class="gameModal-expansion-price' + (ownedExpansions.includes(Number(exp.id)) ? ' gameModal-expansions-owned' : ' gameModal-expansions-notOwned') + (expansionPrice === null ? ' hidden"' : '"') + ' href="' + (expansionPrice === null ? '#' : expansionPrice.url.split('?')[0]) + '">' + (expansionPrice === null ? 'N/A' : '<img src="/img/cart.svg" class="gameModal-expansion-cart"> ' + (expansionPrice.prices.length ? currencyFormat.format(Math.floor(expansionPrice.prices[0].price)) : 'N/A')) + '</a>' +
+                    '<a target="_blank" class="gameModal-expansion-price' + (ownedExpansions.includes(Number(currentExpansion.id)) ? ' gameModal-expansions-owned' : ' gameModal-expansions-notOwned') + (expansionPrice === null ? ' hidden"' : '"') + ' href="' + (expansionPrice === null ? '#' : expansionPrice.url.split('?')[0]) + '">' + (expansionPrice === null ? 'N/A' : '<img src="/img/cart.svg" class="gameModal-expansion-cart"> ' + (expansionPrice.prices.length ? currencyFormat.format(Math.floor(expansionPrice.prices[0].price)) : 'N/A')) + '</a>' +
                     '</div>');
                 $('.gameModal-expansions').append(expansionCell);
             }
         } catch (error) {
-            console.error('Error fetching expansion data, id: ' + exp + '. ' , error);
+            console.error('Error fetching expansion data, id: ' + currentExpansion.id + '. ' , error);
             throw error;
         }
         if ($('.gameModal-expansion-item').length) {
@@ -260,7 +260,7 @@ async function fetchLastPlayed(boardGameId) {
 
 function extractKeywords(gameData) {
     let keywords = new Array();
-    let expansions = new Array();
+    let expansionsIds = new Array();
     let keywordsCounter = 0;
     let mechanicsCounter = 0;
     gameData.link.forEach(boardLink => {
@@ -275,20 +275,20 @@ function extractKeywords(gameData) {
             }
             mechanicsCounter++;
         } else if (boardLink.type == 'boardgameexpansion') {
-            expansions.push(parseInt(boardLink.id));
+            expansionsIds.push(parseInt(boardLink.id));
         }
     });
-    expansions.sort(function (a, b) {
+    expansionsIds.sort(function (a, b) {
         if (a > b) return 1;
         if (a < b) return -1;
         return 0;
     });
-    return {'keywords' : keywords.join(', '), 'expansions': expansions}
+    return {'keywords' : keywords.join(', '), 'expansions': expansionsIds}
 }
 
-function fetchPlayerCount(item) {
+function fetchPlayerCount(game) {
     let votes = 0;
-    item.poll.forEach(poll => {
+    game.poll.forEach(poll => {
         if (poll.name == "suggested_numplayers") {
             poll.results.forEach(result => {
                 /* Votes for best playrange */
@@ -300,6 +300,15 @@ function fetchPlayerCount(item) {
         }
     })
     return bestPlayerCount;
+}
+
+async function toggleModal(boardGameId) {
+    $('.gameModal-expansions .gameModal-expansion-item').remove();
+    if ($('.gameModal-background').attr('data-visible') == 0) {
+        populateModal(await fetchSpecificGames(boardGameId));
+    } else {
+        resetModal();
+    }
 }
 
 function resetModal() {
@@ -314,17 +323,17 @@ function resetModal() {
     }, 300);
 }
 
-function cleanBadCharacters(name) {
+function cleanBadCharacters(gameName) {
     let badCharacters = [' ', '–', '-', ':', '.', ','];
     let nameFix = false;
     while (!nameFix) {
-        if (badCharacters.includes(name[0])) {
-            name = name.substring(1);
+        if (badCharacters.includes(gameName[0])) {
+            gameName = gameName.substring(1);
         } else {
             nameFix = true;
         }
     }
-    return name;
+    return gameName;
 }
 
 function showExpansionInListing(expansionName) {
@@ -342,10 +351,10 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function decodeEntities(encodedString) {
-    var textArea = document.createElement('textarea');
-    textArea.innerHTML = encodedString;
-    return textArea.value;
+function decodeString(encodedString) {
+    let decoder = document.createElement('textarea');
+    decoder.innerHTML = encodedString;
+    return decoder.value;
 }
 
 function initiateSort(sortBy) {
