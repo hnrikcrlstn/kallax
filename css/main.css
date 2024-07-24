@@ -311,6 +311,11 @@ footer {
     position: relative;
 }
 
+.gameModal-expansion-header h4::after {
+    content: ' (' attr(data-expansions-owned) ' owned / ' attr(data-expansions) ')';
+    font-weight: 100;
+}
+
 .gameModal-expansions {
     grid-area: exp;
     display: flex;
@@ -540,7 +545,7 @@ footer {
     .nav-ul  .nav-header, .nav-ul .reset {
         padding-left: 0.5em;
     }
-    .nav-active {
+    .nav-active.nav-header {
         background-color: var(--header-active-clr);
     }
     .nav-toggle~.nav-ul {
@@ -583,8 +588,11 @@ footer {
         position: relative;
     }
     .header-sub-menu-li:before {
-        content: '◉';
+        content: '◇';
         padding-right: 0.5em;
+    }
+    .header-sub-menu-li.nav-active:before {
+        content: '◈';
     }
     .game-grid {
         grid-template-columns: auto;

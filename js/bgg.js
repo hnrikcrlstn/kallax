@@ -133,6 +133,7 @@ async function populateGrid(games) {
 
 async function populateModal(game) {
     const gameLinkData =  extractKeywords(game[0]);
+    console.log(game[0]);
     /* Recommended player counts */
     if (game[0].minplayers.value == game[0].maxplayers.value) {
         $('.gameModal-players .data').text(game[0].minplayers.value);
@@ -150,8 +151,8 @@ async function populateModal(game) {
     $('.gameModal-description').text(decodeString(game[0].description));
     $('.gameModal-image').attr('src', (game[0].image != 'undefined' ? game[0].image : '#'));
     $('.gameModal-weight .data').text((game[0].statistics.ratings.averageweight.value * 1).toFixed(2));
-    $('.gameModal-score-player .data').text(document.getElementById(game[0].id).getAttribute('data-user-score'));
-    $('.gameModal-score-bgg .data').text((game[0].statistics.ratings.average.value * 1).toFixed(2));
+    $('.gameModal-score-player .data').text(Number(document.getElementById(game[0].id).getAttribute('data-score-user')) / 100);
+    $('.gameModal-score-bgg .data').text((Number(game[0].statistics.ratings.average.value)).toFixed(2));
     $('.gameModal-last-played .data').text(await fetchLastPlayed(game[0].id));
     $('.gameModal-keywords .data').text(gameLinkData.keywords);
     $('.gameModal-background').attr('data-visible' , 1).fadeIn('150ms');
@@ -234,7 +235,7 @@ async function populateExpansions(allExpansionsIds) {
             throw error;
         }
         if ($('.gameModal-expansion-item').length) {
-            $('.gameModal-expansion-header').show();
+            $('.gameModal-expansion-header').show().find('h4').attr({'data-expansions': $('.gameModal-expansion-item').length, 'data-expansions-owned': $('.gameModal-expansion-name.gameModal-expansions-owned').length});
         };
     }
     $('.gameModal-loading').fadeOut('250ms');
@@ -315,6 +316,7 @@ function resetModal() {
     $('.gameModal-background').attr('data-visible' , 0);
     $('.gameModal-background').fadeOut('50ms');
     setTimeout(function() {
+        $('.gameModal-expansion-header h4').attr({'data-expansions': 0, 'data-expansions-owned': 0})
         $('.gameModal-name, .gameModal-description, .gameModal-box .data').text('');
         $('.gameModal-image').attr('src' , '');
         $('.gameModal-expansions .gameModal-expansion-item').remove();
