@@ -102,6 +102,7 @@ async function populateGrid(games) {
         gameCell.setAttribute('data-game-name', game.name.toLowerCase());
         gameCell.setAttribute('data-score-user' , userScore == "N/A" ? 0 : userScore * 100);
         gameCell.setAttribute('data-score-bgg' , game.stats.rating.average.value * 100);
+        gameCell.setAttribute('data-rating-bgg', game.stats.rating.ranks.rank.constructor === Array ? game.stats.rating.ranks.rank.find(x => x.id == "1").value : game.stats.rating.ranks.rank.value);
         gameCell.setAttribute('data-playtime-min' , game.stats.minplaytime);
         gameCell.setAttribute('data-playtime-max' , game.stats.maxplaytime);
         gameCell.setAttribute('data-players-min', game.stats.minplayers);
@@ -133,7 +134,6 @@ async function populateGrid(games) {
 
 async function populateModal(game) {
     const gameLinkData =  extractKeywords(game[0]);
-    console.log(game[0]);
     /* Recommended player counts */
     if (game[0].minplayers.value == game[0].maxplayers.value) {
         $('.gameModal-players .data').text(game[0].minplayers.value);
@@ -372,6 +372,9 @@ function initiateSort(sortBy) {
             break;
         case('ranking-user'):
             sortedGames = sortGames(sortObj, 'data-score-user', sortAsc, 'num');
+            break;
+        case('rank-bgg'):
+            sortedGames = sortGames(sortObj, 'data-rating-bgg', !sortAsc, 'num');
             break;
         case('random'):
             sortedGames = sortGames(sortObj, 'data-random', sortAsc, 'num');
