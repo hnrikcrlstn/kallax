@@ -95,14 +95,15 @@ async function populateGrid(games) {
         const playerCount = game.stats.maxplayers == game.stats.minplayers ? game.stats.maxplayers : game.stats.minplayers + '-' + game.stats.maxplayers;
         const playTime = game.stats.minplaytime == game.stats.maxplaytime ? game.stats.minplaytime : game.stats.minplaytime + '-' + game.stats.maxplaytime;
         const userScore = game.stats.rating.value == "N/A" ? 0 : game.stats.rating.value;
+        const bggRank = game.stats.rating.ranks.rank.constructor === Array ? game.stats.rating.ranks.rank.find(x => x.id == "1").value : game.stats.rating.ranks.rank.value;
         
         let gameCell = document.createElement('div');
         gameCell.className = 'game-cell';
         gameCell.id = game.objectid;
         gameCell.setAttribute('data-game-name', game.name.toLowerCase());
         gameCell.setAttribute('data-score-user' , userScore == "N/A" ? 0 : userScore * 100);
-        gameCell.setAttribute('data-score-bgg' , game.stats.rating.average.value * 100);
-        gameCell.setAttribute('data-rating-bgg', game.stats.rating.ranks.rank.constructor === Array ? game.stats.rating.ranks.rank.find(x => x.id == "1").value : game.stats.rating.ranks.rank.value);
+        gameCell.setAttribute('data-score-bgg' , parseInt(game.stats.rating.average.value * 100));
+        gameCell.setAttribute('data-rating-bgg', bggRank);
         gameCell.setAttribute('data-playtime-min' , game.stats.minplaytime);
         gameCell.setAttribute('data-playtime-max' , game.stats.maxplaytime);
         gameCell.setAttribute('data-players-min', game.stats.minplayers);
@@ -117,6 +118,7 @@ async function populateGrid(games) {
             '<div class="game-score-container" style="left: 10px">' +
             '<div class="game-user-score game-score" style="background-position: ' + userScore * 10 + '% bottom">' + game.stats.rating.value + '</div>' +
             '</div>' +
+            '<div class="game-bgg-rating" style="background-color: '+ (bggRank > 500 ? 'var(--transparent-bg)' : 'gold; color: var(--second-clr)') +'"># ' + bggRank + '</div>' +
             '<div class="game-cover-image"><img class="lazyload" src="' + game.thumbnail + '" data-src="' + game.image + '"></div>' + 
             '</div></div>' +
             '<div class="game-data">' + 

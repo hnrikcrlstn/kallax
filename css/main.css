@@ -2,7 +2,7 @@
     --header-height: 2rem;
     --header-margin-left: 2rem;
     --main-bg-clr: #eac435;
-    --header-second-clr: #345995;
+    --second-clr: #345995;
     --header-bg-clr: #2b852e;
     --header-active-clr: #92140c;
     --score-gradient-padding: 85px;
@@ -180,7 +180,7 @@ footer {
     z-index: 1;
 }
 
-.game-score-container {
+.game-score-container, .game-bgg-rating {
     position: absolute;
     background-color: rgba(0,0,0,0.65);
     border-radius: 0.5em;
@@ -206,6 +206,19 @@ footer {
     content: 'User: ';
     font-weight: 400;
     font-size: 80%;
+}
+
+.game-bgg-rating {
+    position: absolute;
+    background-repeat: no-repeat;
+    top: 1em;
+    font-weight: bold;
+    right: 1em;
+    text-align: end;
+    width: max-content;
+    bottom: inherit;
+    padding: 2px 4px;
+    opacity: 0.8;
 }
 .game-data-row {
     display: flex;
@@ -545,13 +558,13 @@ footer {
     .nav-ul {
         max-height: calc(100vh - 3rem);
         overflow: auto;
-        background: var(--header-second-clr);
+        background: var(--second-clr);
     }
     .nav-ul  .nav-header, .nav-ul .reset {
         padding-left: 0.5em;
     }
-    .nav-active.nav-header {
-        background-color: var(--header-active-clr);
+    .nav-active.nav-header::before {
+        content: '★ ';
     }
     .nav-toggle~.nav-ul {
         display: none;
