@@ -107,7 +107,6 @@ async function populateGrid(games) {
         gameCell.setAttribute('data-playtime-max' , game.stats.maxplaytime);
         gameCell.setAttribute('data-players-min', game.stats.minplayers);
         gameCell.setAttribute('data-players-max', game.stats.maxplayers);
-        gameCell.setAttribute('data-random' , Math.floor(Math.random() * 10000));
         gameCell.innerHTML = '<div class="game-name">' +
             '<h3>' + game.name + '</h3>' + 
             '</div>' +
@@ -377,6 +376,7 @@ function initiateSort(sortBy) {
             sortedGames = sortGames(sortObj, 'data-rating-bgg', !sortAsc, 'num');
             break;
         case('random'):
+            randomizeSortSeed();
             sortedGames = sortGames(sortObj, 'data-random', sortAsc, 'num');
             break;
         case('playtime'):
@@ -445,4 +445,10 @@ function filterGames(filterBy) {
         $('header .player-count label').removeClass('nav-active');
         $('header .reset').addClass('hidden');
     }
+}
+
+function randomizeSortSeed() {
+    $('.game-cell').each(function() {
+        $(this).attr('data-random', Math.floor(Math.random() * 10000));
+    })
 }
