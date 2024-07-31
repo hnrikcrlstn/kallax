@@ -19,6 +19,7 @@ In `js/bgg.js`, replace `bggUserName` with your username from Boardgamegeek.
 - [x] List a whole collection
 - [x] Fetch and display play dates
 - [x] Show owned expansions
+- [x] Add several users collection
 - [x] Show not owned expansions
 - [x] Show loading spinner while expansions is being fetched
 - [x] Show lowest available price for expansions not currently owned
