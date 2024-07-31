@@ -612,6 +612,10 @@ footer {
     header > ul li {
         padding: 0;
     }
+    
+    .bgg-user-input {
+        margin-left: 0.5em;
+    }
     .bgg-user-btn {
         background: black;
         color: white;
