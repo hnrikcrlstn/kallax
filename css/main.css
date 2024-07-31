@@ -7,6 +7,19 @@
     --header-active-clr: #92140c;
     --score-gradient-padding: 85px;
     --transparent-bg: rgba(0,0,0,0.8);
+    --thumbBG: #66bb6a;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #eee;
+}
+::-webkit-scrollbar-thumb {
+    background-color: var(--header-bg-clr);
+    box-shadow: 0 0 15px 5px black;
 }
 
 .disabled {
@@ -313,7 +326,7 @@ footer {
     grid-template-columns: 1fr 1fr 10rem 2rem;
     grid-template-rows: auto;
     padding: 0.5em;
-    border-radius: 2em;
+    border-radius: 0.5em;
     /* Background from https://www.toptal.com/designers/subtlepatterns/what-the-hex-dark/ */
     background: url(/img/what-the-hex-dark.png);
 }
@@ -411,7 +424,6 @@ footer {
     flex-wrap: nowrap;
     gap: 1em;
     position: relative;
-    scrollbar-width: none;
 }
 
 .gameModal-loading {
@@ -599,9 +611,6 @@ footer {
     }
     header > ul li {
         padding: 0;
-    }
-    .bgg-user-input {
-
     }
     .bgg-user-btn {
         background: black;
