@@ -38,9 +38,9 @@ $(document).on('keydown', function(e) {
 })
 
 async function fetchCollection() {
-    $('#nav-toggle').prop('checked', false)
     let existingUser = collectors.find(user => user.username === $('#bgg-user').val().toLowerCase());
     if (!existingUser) {
+        $('#nav-toggle').prop('checked', false)
         $('.bgg-user-input').addClass('disabled');
         try {
             const userExists = $.xml2json(await $.ajax({
@@ -59,7 +59,6 @@ async function fetchCollection() {
     }
 }
 
-/* This fetches all base game, which will be displayed in the grid */
 async function fetchAllGames() {
     let ownedGames = new Array();
     $.ajax({
@@ -84,7 +83,6 @@ async function fetchAllGames() {
     return ownedGames;
 }
 
-/* To be able to shown owned expansions, a separate GET needs to fetch a users expansions */
 async function fetchAllExpansions() {
     let ownedExpansions = new Array();
     $.ajax({
@@ -118,7 +116,6 @@ async function updateCollectors(games, expansions) {
 
 async function populateGrid(games) {
     $('.game-grid-loading, .game-grid-background').fadeOut('fast');
-    /* Create a new game cell for each game in collection */
     for (const game of games.item) {
         if (!$('#' + game.objectid).length) {
             /* Handle single data (only 2 players, only 30 min playtimes) responses */
@@ -133,13 +130,13 @@ async function populateGrid(games) {
             gameCell.setAttribute('data-game-name', game.name.toLowerCase());
             gameCell.setAttribute('data-score-user' , userScore == "N/A" ? 0 : userScore * 100);
             gameCell.setAttribute('data-score-bgg' , parseInt(game.stats.rating.average.value * 100));
-            gameCell.setAttribute('data-rating-bgg', bggRank);
+            gameCell.setAttribute('data-rating-bgg', (bggRank == 'Not Ranked' ? 999999 : bggRank));
             gameCell.setAttribute('data-playtime-min' , game.stats.minplaytime);
             gameCell.setAttribute('data-playtime-max' , game.stats.maxplaytime);
             gameCell.setAttribute('data-players-min', game.stats.minplayers);
             gameCell.setAttribute('data-players-max', game.stats.maxplayers);
             gameCell.innerHTML = '<div class="game-name">' +
-                '<h3>' + game.name + '</h3>' + 
+                '<h3>' + game.name + '</h3>' +
                 '</div>' +
                 '<div class="game-cover">' +
                 '<div class="game-score-container" style="right: 10px">'+
@@ -149,9 +146,9 @@ async function populateGrid(games) {
                 '<div class="game-user-score game-score" style="background-position: ' + userScore * 10 + '% bottom">' + game.stats.rating.value + '</div>' +
                 '</div>' +
                 '<div class="game-bgg-rating' + (bggRank > 500 ? '"' : ' top-ranked"') + '># ' + bggRank + '</div>' +
-                '<div class="game-cover-image"><img class="lazyload" src="' + game.thumbnail + '" data-src="' + game.image + '"></div>' + 
+                '<div class="game-cover-image"><img class="lazyload" src="' + game.thumbnail + '" data-src="' + game.image + '"></div>' +
                 '</div></div>' +
-                '<div class="game-data">' + 
+                '<div class="game-data">' +
                 '<div class="game-data-row">' +
                 '<div>' + playerCount + '</div>' +
                 '<div>' + playTime + ' min</div>' +
