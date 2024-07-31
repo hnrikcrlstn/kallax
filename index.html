@@ -57,9 +57,10 @@
                 </ul>
             </li>
             <li class="reset hidden" onClick="initiateSort('reset')">Reset filter</li>
+            <div class="bgg-user-input"><div class="bgg-user-input-inner"><input type="text" id="bgg-user"><span class="bgg-user-btn btn" onClick="fetchCollection()">Add user</span></div></div>
         </ul>
     </header>
-
+    <div class="game-grid-background"></div>
     <!-- To be populated from /js/bgg.js -->
     <main>
         <div class="game-grid" data-sort="name" data-sort-direction="asc">
@@ -82,6 +83,7 @@
             </div>
             <div class="gameModal-image-container">
                 <a href="#" class="bgg-link"><img class="gameModal-image"></a>
+                <div class="gameModal-rank"></div>
             </div>
             <div class="gameModal-data">
                 <div class="gameModal-players">
@@ -110,6 +112,10 @@
                 </div>
                 <div class="gameModal-keywords">
                     <div class="header">Keywords</div>
+                    <div class="data"></div>
+                </div>
+                <div class="gameModal-owners" style="display: none;">
+                    <div class="header">Owned by</div>
                     <div class="data"></div>
                 </div>
             </div>
