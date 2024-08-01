@@ -2,7 +2,7 @@
 var bggUserName = 'hcarl';
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('user')) {
-    bggUserName = toLower(urlParams.get('user'));
+    bggUserName = urlParams.get('user').toLowerCase();
 }
 
 /* Global variables related to sending boardgamedata between functions */
