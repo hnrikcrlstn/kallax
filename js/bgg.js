@@ -345,7 +345,7 @@ function fetchPlayerCount(game) {
             })
         }
     })
-    return bestPlayerCount;
+    return votes ? bestPlayerCount : 'any';
 }
 
 async function toggleModal(boardGameId) {
