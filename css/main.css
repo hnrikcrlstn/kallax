@@ -449,6 +449,20 @@ footer {
     z-index: 5005;
 }
 
+.game-grid-loading-bars {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    gap: 0.25em;
+}
+
+.loading-state {
+    margin-top: 1.5em;
+    color: var(--main-bg-clr);
+    text-align: center;
+    font-style: italic;
+}
+
 .game-grid-background {
     position: fixed;
     background: var(--transparent-bg);
@@ -459,7 +473,7 @@ footer {
     z-index: 5000;
 }
 
-.gameModal-loading > span, .game-grid-loading > span {
+.gameModal-loading > span, .game-grid-loading-bars > span {
     display: inline-block;
     background: var(--main-bg-clr);
     height: 2.5rem;
@@ -471,23 +485,23 @@ footer {
     animation-timing-function: linear;
     animation-duration: var(--animation-time);
 }
-.gameModal-loading .bar1, .game-grid-loading .bar1 {
+.gameModal-loading .bar1, .game-grid-loading-bars .bar1 {
     animation-delay: var(--animation-delay);
 }
 
-.gameModal-loading .bar2, .game-grid-loading .bar2{
+.gameModal-loading .bar2, .game-grid-loading-bars .bar2{
     animation-delay: calc(2 * var(--animation-delay));
 }
 
-.gameModal-loading .bar3, .game-grid-loading .bar3 {
+.gameModal-loading .bar3, .game-grid-loading-bars .bar3 {
     animation-delay: calc(3 * var(--animation-delay));
 }
 
-.gameModal-loading .bar4, .game-grid-loading .bar4 {
+.gameModal-loading .bar4, .game-grid-loading-bars .bar4 {
     animation-delay: calc(4 * var(--animation-delay));
 }
 
-.gameModal-loading .bar5, .game-grid-loading .bar5 {
+.gameModal-loading .bar5, .game-grid-loading-bars .bar5 {
     animation-delay: calc(5 * var(--animation-delay));
 }
 

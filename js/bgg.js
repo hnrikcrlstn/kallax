@@ -39,6 +39,7 @@ $(document).on('keydown', function(e) {
 
 async function fetchCollection() {
     let existingUser = collectors.find(user => user.username === $('#bgg-user').val().toLowerCase());
+    $('.loading-state').text('Fetching collection')
     if (!existingUser) {
         $('#nav-toggle').prop('checked', false)
         $('.bgg-user-input').addClass('disabled');
@@ -61,6 +62,7 @@ async function fetchCollection() {
 
 async function fetchAllGames() {
     let ownedGames = new Array();
+    $('.loading-state').text('Fetching games');
     $.ajax({
         url: api_url + 'collection?username=' + bggUserName + '&stats=1&excludesubtype=boardgameexpansion',
         dataType: 'text',
@@ -68,16 +70,18 @@ async function fetchAllGames() {
         crossDomain: true
     }).done(function(data, statusText, XHR) {
         if (XHR.status == 200) {
+            $('.loading-state').text('Shuffling decks, rolling dice');
             for (let i = 0; i < $.xml2json(data).item.length; i++) {
                 ownedGames.push(parseInt($.xml2json(data).item[i].objectid));
             }
             populateGrid($.xml2json(data));
         } else {
+            $('.loading-state').text('Fetching games again...');
             /*
             Sometimes BGG needs to rebuild their cache with a user collection
             This makes sure the collection is fetched without sending too many request to the BGG API 
             */
-            const timeOut = setTimeout(fetchAllGames, 500)
+            const timeOut = setTimeout(fetchAllGames, 1500)
         }
     })
     return ownedGames;
@@ -101,7 +105,7 @@ async function fetchAllExpansions() {
             Sometimes BGG needs to rebuild their cache with a user collection
             This makes sure the collection is fetched without sending too many request to the BGG API 
             */
-            const timeOut = setTimeout(fetchAllExpansions, 500)
+            const timeOut = setTimeout(fetchAllExpansions, 1500)
         }
     })
     return ownedExpansions;
@@ -115,7 +119,7 @@ async function updateCollectors(games, expansions) {
 }
 
 async function populateGrid(games) {
-    $('.game-grid-loading, .game-grid-background').fadeOut('fast');
+    $('.loading-state').text('Showing of games');
     for (const game of games.item) {
         if (!$('#' + game.objectid).length) {
             /* Handle single data (only 2 players, only 30 min playtimes) responses */
@@ -123,7 +127,7 @@ async function populateGrid(games) {
             const playTime = game.stats.minplaytime == game.stats.maxplaytime ? game.stats.minplaytime : game.stats.minplaytime + '-' + game.stats.maxplaytime;
             const userScore = game.stats.rating.value == "N/A" ? 0 : game.stats.rating.value;
             const bggRank = game.stats.rating.ranks.rank.constructor === Array ? game.stats.rating.ranks.rank.find(x => x.id == "1").value : game.stats.rating.ranks.rank.value;
-
+            
             let gameCell = document.createElement('div');
             gameCell.className = 'game-cell';
             gameCell.id = game.objectid;
@@ -135,31 +139,18 @@ async function populateGrid(games) {
             gameCell.setAttribute('data-playtime-max' , game.stats.maxplaytime);
             gameCell.setAttribute('data-players-min', game.stats.minplayers);
             gameCell.setAttribute('data-players-max', game.stats.maxplayers);
-            gameCell.innerHTML = '<div class="game-name">' +
-                '<h3>' + game.name + '</h3>' +
-                '</div>' +
-                '<div class="game-cover">' +
-                '<div class="game-score-container" style="right: 10px">'+
-                '<div class="game-bgg-score game-score" style="background-position: ' + game.stats.rating.average.value * 10 + '% bottom">' + parseFloat(game.stats.rating.average.value).toFixed(2) + '</div>' +
-                '</div>' +
-                '<div class="game-score-container" style="left: 10px">' +
-                '<div class="game-user-score game-score" style="background-position: ' + userScore * 10 + '% bottom">' + game.stats.rating.value + '</div>' +
-                '</div>' +
+            gameCell.innerHTML = '<div class="game-name"><h3>' + game.name + '</h3></div>' +
+            '<div class="game-cover"><div class="game-score-container" style="right: 10px">'+
+                '<div class="game-bgg-score game-score" style="background-position: ' + game.stats.rating.average.value * 10 + '% bottom">' + parseFloat(game.stats.rating.average.value).toFixed(2) + '</div></div><div class="game-score-container" style="left: 10px">' +
+                '<div class="game-user-score game-score" style="background-position: ' + userScore * 10 + '% bottom">' + game.stats.rating.value + '</div></div>' +
                 '<div class="game-bgg-rating' + (bggRank > 500 ? '"' : ' top-ranked"') + '># ' + bggRank + '</div>' +
-                '<div class="game-cover-image"><img class="lazyload" src="' + game.thumbnail + '" data-src="' + game.image + '"></div>' +
-                '</div></div>' +
-                '<div class="game-data">' +
-                '<div class="game-data-row">' +
-                '<div>' + playerCount + '</div>' +
-                '<div>' + playTime + ' min</div>' +
-                '</div>' +
-                '<div class="game-data-row game-header-row">' +
-                '<div>Players</div><div>Play time</div>' +
-                '</div></div>';
-            $('.game-grid').append(gameCell);
-            }
-        };
+                '<div class="game-cover-image"><img class="lazyload" src="' + game.thumbnail + '" data-src="' + game.image + '"></div></div></div>' +
+                '<div class="game-data"><div class="game-data-row"><div>' + playerCount + '</div><div>' + playTime + ' min</div></div><div class="game-data-row game-header-row"><div>Players</div><div>Play time</div></div></div>';
+                $('.game-grid').append(gameCell);
+        }
+    };
     $('.bgg-user-input').removeClass('disabled');
+    $('.game-grid-loading, .game-grid-background').fadeOut('fast');
 }
 
 async function populateModal(game) {
@@ -183,7 +174,7 @@ async function populateModal(game) {
     $('.gameModal-image').attr('src', (game[0].image != 'undefined' ? game[0].image : '#'));
     $('.gameModal-rank').text('# ' + bggRank).toggleClass('top-ranked', bggRank < 499);
     $('.gameModal-weight .data').text((game[0].statistics.ratings.averageweight.value * 1).toFixed(2));
-    $('.gameModal-score-player .data').text(Number(document.getElementById(game[0].id).getAttribute('data-score-user')) / 100);
+    $('.gameModal-score-player .data').text((Number(document.getElementById(game[0].id).getAttribute('data-score-user')) ? Number(document.getElementById(game[0].id).getAttribute('data-score-user')) / 100 : '-'));
     $('.gameModal-score-bgg .data').text((Number(game[0].statistics.ratings.average.value)).toFixed(2));
     $('.gameModal-last-played .data').text(await fetchLastPlayed(game[0].id));
     $('.gameModal-keywords .data').text(gameLinkData.keywords);
@@ -195,6 +186,8 @@ async function populateModal(game) {
     if (gameLinkData.expansions.length > 0) {
         $('.gameModal-loading').fadeIn('500ms');
         populateExpansions(gameLinkData.expansions);
+    } else {
+        $('.gameModal-expansion-header').hide();
     }
 }
 
@@ -242,6 +235,7 @@ async function fetchGamePrice(boardGameId) {
 }
 
 async function populateExpansions(allExpansionsIds) {
+    $('.gameModal-expansion-header').show().find('h4').attr({'data-expansions': $('.gameModal-expansion-item').length, 'data-expansions-owned': $('.gameModal-expansion-name.gameModal-expansions-owned').length});
     const rawExpansionData = await fetchSpecificGames(allExpansionsIds);
     let expansionData = Array.isArray(rawExpansionData) ? rawExpansionData : [rawExpansionData];
     let ownedExpansionsArray = ownedExpansions();
@@ -254,25 +248,21 @@ async function populateExpansions(allExpansionsIds) {
             expansionName = cleanBadCharacters(expansionName.replace($('.gameModal-name').text(), ''));
             if (showExpansionInListing(expansionName)) {
                 const expansionPrice = ownedExpansionsArray.includes(Number(currentExpansion.id)) ? null : await fetchGamePrice(currentExpansion.id);
-                const expansionCell = $('<div class="gameModal-expansion-item" id="' + currentExpansion.id + '">' +
-                    '<div class="gameModal-expansion-image-container">' +
-                    '<a href="https://boardgamegeek.com/boardgame/' + currentExpansion.id + '" target="_blank" class="bgg-link">' +
-                    '<img class="gameModal-expansion-image ' +  (ownedExpansionsArray.includes(Number(currentExpansion.id)) ? 'gameModal-expansions-owned' : 'gameModal-expansions-notOwned') + '" src="' + (currentExpansion.thumbnail ? currentExpansion.thumbnail : '/img/image-not-found-icon.webp') + '">' +
-                    '</a>' +
-                    '</div>' +
-                    '<a href="https://boardgamegeek.com/boardgame/' + currentExpansion.id + '" target="_blank" class="bgg-link">' +
+                const expansionCell = $('<div class="gameModal-expansion-item" id="' + currentExpansion.id + '"><div class="gameModal-expansion-image-container"><a href="https://boardgamegeek.com/boardgame/' + currentExpansion.id + 
+                    '" target="_blank" class="bgg-link"><img class="gameModal-expansion-image ' +  (ownedExpansionsArray.includes(Number(currentExpansion.id)) ? 'gameModal-expansions-owned' : 'gameModal-expansions-notOwned') + '" src="' + (currentExpansion.thumbnail ? currentExpansion.thumbnail : '/img/image-not-found-icon.webp') + 
+                    '"></a></div><a href="https://boardgamegeek.com/boardgame/' + currentExpansion.id + '" target="_blank" class="bgg-link">' +
                     '<h4 class="gameModal-expansion-name ' +  (ownedExpansionsArray.includes(Number(currentExpansion.id)) ? 'gameModal-expansions-owned' : 'gameModal-expansions-notOwned') + '">' + expansionName + '</h4>' +
-                    '</a>' +
-                    '<a target="_blank" class="gameModal-expansion-price' + (ownedExpansionsArray.includes(Number(currentExpansion.id)) ? ' gameModal-expansions-owned' : ' gameModal-expansions-notOwned') + (expansionPrice === null ? ' hidden"' : '"') + ' href="' + (expansionPrice === null ? '#' : expansionPrice.url.split('?')[0]) + '">' + (expansionPrice === null ? 'N/A' : '<img src="/img/cart.svg" class="gameModal-expansion-cart"> ' + (expansionPrice.prices.length ? currencyFormat.format(Math.floor(expansionPrice.prices[0].price)) : 'N/A')) + '</a>' +
-                    '</div>');
+                    '</a><a target="_blank" class="gameModal-expansion-price' + (ownedExpansionsArray.includes(Number(currentExpansion.id)) ? ' gameModal-expansions-owned' : ' gameModal-expansions-notOwned') + (expansionPrice === null ? ' hidden"' : '"') + ' href="' + (expansionPrice === null ? '#' : expansionPrice.url.split('?')[0]) + '">' + 
+                    (expansionPrice === null ? 'N/A' : '<img src="/img/cart.svg" class="gameModal-expansion-cart"> ' + (expansionPrice.prices.length ? currencyFormat.format(Math.floor(expansionPrice.prices[0].price)) : 'N/A')) + '</a></div>');
                 $('.gameModal-expansions').append(expansionCell);
             }
+            $('.gameModal-expansion-header').show().find('h4').attr({'data-expansions': $('.gameModal-expansion-item').length, 'data-expansions-owned': $('.gameModal-expansion-name.gameModal-expansions-owned').length});
         } catch (error) {
             console.error('Error fetching expansion data, id: ' + currentExpansion.id + '. ' , error);
             throw error;
         }
-        if ($('.gameModal-expansion-item').length) {
-            $('.gameModal-expansion-header').show().find('h4').attr({'data-expansions': $('.gameModal-expansion-item').length, 'data-expansions-owned': $('.gameModal-expansion-name.gameModal-expansions-owned').length});
+        if (!$('.gameModal-expansion-item').length) {
+            $('.gameModal-expansion-header').hide();
         };
     }
     $('.gameModal-loading').fadeOut('250ms');
@@ -515,3 +505,8 @@ const currencyFormat = new Intl.NumberFormat('sv-SE', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
 })
+
+$.fn.isOverflown=function(){
+    var e=this[0];
+    return e.scrollWidth>e.clientWidth;
+}

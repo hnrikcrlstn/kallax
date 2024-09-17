@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="/css/main.css">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
     <script src="/js/jquery-3.6.0.min.js"></script>
-    <!-- Lazy loading from https://afarkas.github.io/lazysizes/ -->
     <script src="/js/lazysizes.min.js"></script>
     <script src="/js/jquery.xml2json.js"></script>
     <script type="text/javascript" src="/js/bgg.js"></script>
@@ -65,11 +64,14 @@
     <main>
         <div class="game-grid" data-sort="name" data-sort-direction="asc">
             <div class="game-grid-loading">
-                <span class="bar1"></span>
-                <span class="bar2"></span>
-                <span class="bar3"></span>
-                <span class="bar4"></span>
-                <span class="bar5"></span>
+                <div class="game-grid-loading-bars">
+                    <span class="bar1"></span>
+                    <span class="bar2"></span>
+                    <span class="bar3"></span>
+                    <span class="bar4"></span>
+                    <span class="bar5"></span>
+                </div>
+                <div class="loading-state"></div>
             </div>
         </div>
     </main>
