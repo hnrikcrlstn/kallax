@@ -56,7 +56,9 @@ async function fetchCollection() {
         }
         bggUserName = ($('#bgg-user').val().toLowerCase());
         $('.game-grid-loading, .game-grid-background').show();
-        updateCollectors(await fetchAllGames(), await fetchAllExpansions());
+        const games = await fetchAllGames();
+        const expansions = await fetchAllExpansions();
+        updateCollectors(games, expansions);
     }
 }
 
@@ -151,6 +153,7 @@ async function populateGrid(games) {
     };
     $('.bgg-user-input').removeClass('disabled');
     $('.game-grid-loading, .game-grid-background').fadeOut('fast');
+    initiateSort('ranking-user');
 }
 
 async function populateModal(game) {
@@ -374,7 +377,7 @@ function cleanBadCharacters(gameName) {
 }
 
 function showExpansionInListing(expansionName) {
-    const ignorableNames = ["promo", "fan exp", "mini-tournament"];
+    const ignorableNames = ["promo", "fan exp", "mini-tournament", "mini-expansion"];
     let showExpansion = true;
     for (names of ignorableNames) {
         if (expansionName.toLowerCase().includes(names)) {
