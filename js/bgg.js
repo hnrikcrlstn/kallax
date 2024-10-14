@@ -77,13 +77,16 @@ async function fetchAllGames() {
                 ownedGames.push(parseInt($.xml2json(data).item[i].objectid));
             }
             populateGrid($.xml2json(data));
-        } else {
-            $('.loading-state').text('Fetching games again...');
+        } else if (XHR.status == 202) {
+            $('.loading-state').text('Fetching games yet again...');
             /*
             Sometimes BGG needs to rebuild their cache with a user collection
             This makes sure the collection is fetched without sending too many request to the BGG API 
             */
-            const timeOut = setTimeout(fetchAllGames, 1500)
+            return setTimeout(fetchAllGames, 7500);
+        } else if (XHR.status == 429) {
+            $('.loading-state').text('Collection too big, cooling down');
+            return setTimeout(fetchAllGames, 15000);
         }
     })
     return ownedGames;
@@ -102,19 +105,21 @@ async function fetchAllExpansions() {
             for (let i = 0; i < expansions.item.length; i++) {
                 ownedExpansions.push(parseInt(expansions.item[i].objectid));
             }
-        } else {
+        } else if (XHR.status == 202) {
             /*
             Sometimes BGG needs to rebuild their cache with a user collection
             This makes sure the collection is fetched without sending too many request to the BGG API 
             */
-            const timeOut = setTimeout(fetchAllExpansions, 1500)
+            return setTimeout(fetchAllExpansions, 7500);
+        } else if (XHR.status == 429) {
+            return setTimeout(fetchAllExpansions, 15000);
         }
     })
     return ownedExpansions;
 }
 
 async function updateCollectors(games, expansions) {
-    let existingUser = collectors.find(user => user.username === bggUserName);
+    let existingUser = collectors.find(user => user.username == bggUserName);
     if (!existingUser) {
         collectors.push({ "username": bggUserName, "games": games, "expansions": expansions});
     }
@@ -153,7 +158,13 @@ async function populateGrid(games) {
     };
     $('.bgg-user-input').removeClass('disabled');
     $('.game-grid-loading, .game-grid-background').fadeOut('fast');
-    initiateSort('ranking-user');
+
+    if ($('.game-grid').attr('data-sort') != 'ranking-user') {
+        initiateSort('ranking-user');
+    }
+
+    $('.game-count').text($('.game-grid > .game-cell').length);
+    $('.game-count-container').removeClass('hidden');
 }
 
 async function populateModal(game) {
