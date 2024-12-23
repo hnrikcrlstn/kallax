@@ -184,6 +184,7 @@ footer {
     grid-template-rows: auto;
     gap: 0.25rem;
     align-items: start;
+    justify-items: center;
 }
 .game-cell {
     width: 300px;
