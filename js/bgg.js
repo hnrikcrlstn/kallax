@@ -6,7 +6,7 @@ if (urlParams.get('user')) {
 }
 
 /* Global variables related to sending boardgamedata between functions */
-var collectors = new Array();
+var collectors = [];
 const api_url = 'https://boardgamegeek.com/xmlapi2/';
 const api_price_url = 'https://bradspelspriser.se/api/info?currency=sek&destination=SE&delivery=PACKAGE,OFFCE,PICKUPBOX,POSTOFFICE,LETTER&preferred_language=GB&eid=';
 
@@ -40,7 +40,7 @@ $(document).on('keydown', function(e) {
 async function fetchCollection() {
     let existingUser = collectors.find(user => user.username === $('#bgg-user').val().toLowerCase());
     $('.loading-state').text('Fetching collection')
-    if (!existingUser) {
+    if (existingUser === undefined) {
         $('#nav-toggle').prop('checked', false)
         $('.bgg-user-input').addClass('disabled');
         try {
@@ -63,7 +63,7 @@ async function fetchCollection() {
 }
 
 async function fetchAllGames() {
-    let ownedGames = new Array();
+    let ownedGames = [];
     $('.loading-state').text('Fetching games');
     $.ajax({
         url: api_url + 'collection?username=' + bggUserName + '&stats=1&excludesubtype=boardgameexpansion',
@@ -93,7 +93,7 @@ async function fetchAllGames() {
 }
 
 async function fetchAllExpansions() {
-    let ownedExpansions = new Array();
+    let ownedExpansions = [];
     $.ajax({
         url: api_url + 'collection?username=' + bggUserName + '&stats=1&subtype=boardgameexpansion',
         dataType: 'text',
@@ -151,7 +151,7 @@ async function populateGrid(games) {
                 '<div class="game-bgg-score game-score" style="background-position: ' + game.stats.rating.average.value * 10 + '% bottom">' + parseFloat(game.stats.rating.average.value).toFixed(2) + '</div></div><div class="game-score-container" style="left: 10px">' +
                 '<div class="game-user-score game-score" style="background-position: ' + userScore * 10 + '% bottom">' + game.stats.rating.value + '</div></div>' +
                 '<div class="game-bgg-rating' + (bggRank > 500 ? '"' : ' top-ranked"') + '># ' + bggRank + '</div>' +
-                '<div class="game-cover-image"><img class="lazyload" src="' + game.thumbnail + '" data-src="' + game.image + '"></div></div></div>' +
+                '<div class="game-cover-image"><img class="lazyload" src="' + (game.thumbnail === undefined ? "/img/missing-image.svg" : game.thumbnail)  + '" data-src="' + (game.image === undefined ? "/img/missing-image.svg" : game.image) + '"></div></div></div>' +
                 '<div class="game-data"><div class="game-data-row"><div>' + playerCount + '</div><div>' + playTime + ' min</div></div><div class="game-data-row game-header-row"><div>Players</div><div>Play time</div></div></div>';
                 $('.game-grid').append(gameCell);
         }
@@ -185,7 +185,7 @@ async function populateModal(game) {
     $('.gameModal-box a.bgg-link').attr({'href': 'https://boardgamegeek.com/boardgame/' + game[0].id , 'target': '_blank'});
     $('.gameModal-name').text(game[0].name.length > 1 ? game[0].name[0].value : game[0].name.value );
     $('.gameModal-description').text(decodeString(game[0].description));
-    $('.gameModal-image').attr('src', (game[0].image != 'undefined' ? game[0].image : '#'));
+    $('.gameModal-image').attr('src', (game[0].image === undefined ? "/img/missing-image.svg" : game[0].image));
     $('.gameModal-rank').text('# ' + bggRank).toggleClass('top-ranked', bggRank < 499);
     $('.gameModal-weight .data').text((game[0].statistics.ratings.averageweight.value * 1).toFixed(2));
     $('.gameModal-score-player .data').text((Number(document.getElementById(game[0].id).getAttribute('data-score-user')) ? Number(document.getElementById(game[0].id).getAttribute('data-score-user')) / 100 : '-'));
@@ -206,9 +206,10 @@ async function populateModal(game) {
 }
 
 /* Fetch all data on specific game or games */
+/* Used by populateModal and populateExpansions  */
 async function fetchSpecificGames(boardGameId) {
-    let result = new Array();
-    result.item = new Array()
+    let result = [];
+    result.item = [];
     let x = 0;
     while (x <= boardGameId.length) {
         try {
@@ -283,7 +284,7 @@ async function populateExpansions(allExpansionsIds) {
 }
 
 function ownedExpansions() {
-    let expansions = new Array();
+    let expansions = [];
     for (let i = 0; i < collectors.length; i++) {
         expansions.push(collectors[i].expansions);
     }
@@ -309,8 +310,8 @@ async function fetchLastPlayed(boardGameId) {
 }
 
 function extractKeywords(gameData) {
-    let keywords = new Array();
-    let expansionsIds = new Array();
+    let keywords = [];
+    let expansionsIds = [];
     let keywordsCounter = 0;
     let mechanicsCounter = 0;
     gameData.link.forEach(boardLink => {
@@ -495,10 +496,11 @@ function filterGames(filterBy) {
         $('header .player-count label').removeClass('nav-active');
         $('header .reset').addClass('hidden');
     }
+    $('.game-count').text($('.game-grid > *:visible').length);
 }
 
 function findOwners(game) {
-    let owners = new Array();
+    let owners = [];
     for (let i = 0; i < collectors.length; i++) {
         if (collectors[i].games.includes(parseInt(game))) {
             owners.push(collectors[i].username);

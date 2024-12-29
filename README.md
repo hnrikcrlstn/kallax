@@ -27,4 +27,4 @@ In `js/bgg.js`, replace `bggUserName` with your username from Boardgamegeek.
 - [x] Mobile styling
 - [ ] Show recommendations for new games
 - [ ] Slider for expansions in game modal
-- [ ] Fetch play dates on whole collection without overloading BGG API
+- [ ] Fetch play dates on whole collection without overloading BGG API  (if possible)
