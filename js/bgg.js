@@ -66,7 +66,7 @@ async function fetchAllGames() {
     let ownedGames = [];
     $('.loading-state').text('Fetching games');
     $.ajax({
-        url: api_url + 'collection?username=' + bggUserName + '&stats=1&excludesubtype=boardgameexpansion',
+        url: api_url + 'collection?username=' + bggUserName + '&stats=1&excludesubtype=boardgameexpansion&own=1',
         dataType: 'text',
         type: 'GET',
         crossDomain: true
@@ -95,7 +95,7 @@ async function fetchAllGames() {
 async function fetchAllExpansions() {
     let ownedExpansions = [];
     $.ajax({
-        url: api_url + 'collection?username=' + bggUserName + '&stats=1&subtype=boardgameexpansion',
+        url: api_url + 'collection?username=' + bggUserName + '&stats=1&subtype=boardgameexpansion&own=1',
         dataType: 'text',
         type: 'GET',
         crossDomain: true
