@@ -260,7 +260,7 @@ async function populateExpansions(allExpansionsIds) {
         }
         try {
             let expansionName = currentExpansion.name.length > 1 ? currentExpansion.name[0].value : currentExpansion.name.value;
-            expansionName = cleanBadCharacters(expansionName.replace($('.gameModal-name').text(), ''));
+            expansionName = cleanBadCharacters(expansionName.replace($('.gameModal-name').text(), '').replace($('.gameModal-name').text().replace(/ \(.+\)/, ''), ''));
             if (showExpansionInListing(expansionName)) {
                 const expansionPrice = ownedExpansionsArray.includes(Number(currentExpansion.id)) ? null : await fetchGamePrice(currentExpansion.id);
                 const expansionCell = $('<div class="gameModal-expansion-item" id="' + currentExpansion.id + '"><div class="gameModal-expansion-image-container"><a href="https://boardgamegeek.com/boardgame/' + currentExpansion.id + 
