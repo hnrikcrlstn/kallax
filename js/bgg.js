@@ -158,13 +158,9 @@ async function populateGrid(games) {
     };
     $('.bgg-user-input').removeClass('disabled');
     $('.game-grid-loading, .game-grid-background').fadeOut('fast');
-
-    if ($('.game-grid').attr('data-sort') != 'ranking-user') {
-        initiateSort('ranking-user');
-    }
-
     $('.game-count').text($('.game-grid > .game-cell').length);
     $('.game-count-container').removeClass('hidden');
+    initialSort();
 }
 
 async function populateModal(game) {
@@ -415,15 +411,15 @@ function initiateSort(sortBy) {
     const sortObj = $('.game-grid').children('.game-cell');
     switch (sortBy) {
         case('name'):
-            sortedGames = sortGames(sortObj, 'data-game-name', sortAsc, 'alph');
+            sortedGames = sortGames(sortObj, 'data-game-name', !sortAsc, 'alph');
             break;
-        case('ranking-bgg'):
+        case('score-bgg'):
             sortedGames = sortGames(sortObj, 'data-score-bgg', sortAsc, 'num');
             break;
-        case('ranking-user'):
+        case('score-user'):
             sortedGames = sortGames(sortObj, 'data-score-user', sortAsc, 'num');
             break;
-        case('rank-bgg'):
+        case('rank'):
             sortedGames = sortGames(sortObj, 'data-rating-bgg', !sortAsc, 'num');
             break;
         case('random'):
@@ -478,9 +474,9 @@ function filterGames(filterBy) {
     $('header li.filter').each(function() {
         $(this).toggleClass('nav-active', $(this).hasClass(filterBy));
     })
-    if (filterBy.includes('playcount')) {
+    if (filterBy.includes('playercount')) {
         $('header .player-count label').addClass('nav-active');
-        const numberPlayers = filterBy.split('_')[1];
+        const numberPlayers = filterBy.split('-')[1];
         if (numberPlayers != $('header .reset').attr('filtered')) {
             $('header .reset').removeClass('hidden').attr('filtered' , numberPlayers);
             for (const game of $('.game-grid').children('.game-cell')) {
@@ -497,6 +493,32 @@ function filterGames(filterBy) {
         $('header .reset').addClass('hidden');
     }
     $('.game-count').text($('.game-grid > *:visible').length);
+}
+
+function initialSort() {
+    if (urlParams.get('sort')) {
+        const sortBy = urlParams.get('sort').toLowerCase();
+        const sort_options = ["playercount", "score-bgg", "score-user", "random", "playtime", "rank", "name"];
+        for (const sort of sort_options) {
+            if (sortBy.includes(sort)) {
+                if (sort.includes('playercount')) {
+                    if (Math.round(sortBy.split('-')[1]) > 7) {
+                        initiateSort('playercount-more');
+                        return;
+                    } else if (Math.round(sortBy.split('-')[1]) > 0) {
+                        initiateSort('playercount-' + Math.round(sortBy.split('-')[1]));
+                        return;
+                    } 
+                } else {
+                    if (sort_options.indexOf(sortBy) > -1) {
+                        initiateSort(sortBy);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+    initiateSort('score-user');
 }
 
 function findOwners(game) {
