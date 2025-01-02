@@ -335,6 +335,7 @@ function extractKeywords(gameData) {
 
 function fetchPlayerCount(game) {
     let votes = 0;
+    let bestPlayerCount;
     game.poll.forEach(poll => {
         if (poll.name == "suggested_numplayers") {
             poll.results.forEach(result => {
