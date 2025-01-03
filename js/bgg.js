@@ -160,7 +160,7 @@ async function populateGrid(games) {
     $('.game-grid-loading, .game-grid-background').fadeOut('fast');
     $('.game-count').text($('.game-grid > .game-cell').length);
     $('.game-count-container').removeClass('hidden');
-    initialSort();
+    sortOnLoad();
 }
 
 async function populateModal(game) {
@@ -496,30 +496,35 @@ function filterGames(filterBy) {
     $('.game-count').text($('.game-grid > *:visible').length);
 }
 
-function initialSort() {
-    if (urlParams.get('sort')) {
-        const sortBy = urlParams.get('sort').toLowerCase();
-        const sort_options = ["playercount", "score-bgg", "score-user", "random", "playtime", "rank", "name"];
+function sortOnLoad() {
+    let filterBy = false;
+    let sortBy = false;
+    if (urlParams.has('filter')) {
+        filterBy = urlParams.get('filter').toLocaleLowerCase();
+    }
+    if (urlParams.has('sort')) {
+        sortBy = urlParams.get('sort', false).toLowerCase();
+    }
+    if (sortBy) {
+        const sort_options = ["score-bgg", "score-user", "random", "playtime", "rank", "name"];
         for (const sort of sort_options) {
             if (sortBy.includes(sort)) {
-                if (sort.includes('playercount')) {
-                    if (Math.round(sortBy.split('-')[1]) > 7) {
-                        initiateSort('playercount-more');
-                        return;
-                    } else if (Math.round(sortBy.split('-')[1]) > 0) {
-                        initiateSort('playercount-' + Math.round(sortBy.split('-')[1]));
-                        return;
-                    } 
-                } else {
-                    if (sort_options.indexOf(sortBy) > -1) {
-                        initiateSort(sortBy);
-                        return;
-                    }
+                if (sort_options.indexOf(sortBy) > -1) {
+                    initiateSort(sortBy);
                 }
             }
         }
+    } else {
+        initiateSort('score-user');
     }
-    initiateSort('score-user');
+    if (filterBy != false && filterBy.includes('playercount')) {
+        const playercount = Math.round(Math.abs(filterBy.split('-')[1]));
+        if (playercount > 7) {
+            filterGames('playercount-more');
+        } else if (playercount > 1) {
+            filterGames('playercount-' + playercount);
+        }
+    }
 }
 
 function findOwners(game) {
