@@ -1,6 +1,7 @@
 # Kallax
 A way to display your boardgame collection with data straight from [Boardgamegeek](https://boardgamegeek.com).
 Set the default username in `js/bgg.js` or use `user=[username]` as a URL-parameter. 
+
 You can also pass `sort=[sortby]`and `filter=playercount-[X]` to change the inital sorting and filter. Acceptable sortBy values are score-bgg, score-user, random, playtime, rank and name. Filter accepts `playercount-[X]` where `[X]` is any integer. For example, `?user=demouser&sort=rank&filter=playercount-4` will fetch demousers games, sort them by rank and filter out any game that can't be played with 4 players.
 
 [Preview](https://kallax.carlstein.dev)
