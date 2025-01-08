@@ -1,18 +1,19 @@
+/* Global variables related to sending boardgamedata between functions */
 /* Change this var to your Boardgamegeek username */
 var bggUserName = 'hcarl';
+
 const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.get('user')) {
+if (urlParams.has('user')) {
     bggUserName = urlParams.get('user').toLowerCase();
 }
 
-/* Global variables related to sending boardgamedata between functions */
 var collectors = [];
 const api_url = 'https://boardgamegeek.com/xmlapi2/';
 const api_price_url = 'https://bradspelspriser.se/api/info?currency=sek&destination=SE&delivery=PACKAGE,OFFCE,PICKUPBOX,POSTOFFICE,LETTER&preferred_language=GB&eid=';
 
 /* Fetch game collection when page has loaded */
 $(document).ready(function() {
-    $('#bgg-user').val(bggUserName);
+    $('#bgg-user').val(bggUserName.toLowerCase());
     fetchCollection();
 })
 
@@ -32,7 +33,7 @@ $(document).on('click', '.header-sub-menu-checkbox, .reset', function() {
     }
 });
 $(document).on('keydown', function(e) {
-    if (e.code === 'Enter') {
+    if (e.code === 'Enter' || e.code === 'NumpadEnter') {
         fetchCollection();
     }
 })
@@ -64,57 +65,90 @@ async function fetchCollection() {
 
 async function fetchAllGames() {
     let ownedGames = [];
+    let gamesFetched = false;
+    let sleepTime = 1000;
     $('.loading-state').text('Fetching games');
-    $.ajax({
-        url: api_url + 'collection?username=' + bggUserName + '&stats=1&excludesubtype=boardgameexpansion&own=1',
-        dataType: 'text',
-        type: 'GET',
-        crossDomain: true
-    }).done(function(data, statusText, XHR) {
-        if (XHR.status == 200) {
-            $('.loading-state').text('Shuffling decks, rolling dice');
-            for (let i = 0; i < $.xml2json(data).item.length; i++) {
-                ownedGames.push(parseInt($.xml2json(data).item[i].objectid));
-            }
-            populateGrid($.xml2json(data));
-        } else if (XHR.status == 202) {
-            $('.loading-state').text('Fetching games yet again...');
-            /*
-            Sometimes BGG needs to rebuild their cache with a user collection
-            This makes sure the collection is fetched without sending too many request to the BGG API 
-            */
-            return setTimeout(fetchAllGames, 7500);
-        } else if (XHR.status == 429) {
-            $('.loading-state').text('Collection too big, cooling down');
-            return setTimeout(fetchAllGames, 15000);
+
+    while (!gamesFetched) {
+        try {
+            await $.ajax({
+                url: api_url + 'collection?username=' + bggUserName + '&stats=1&excludesubtype=boardgameexpansion&own=1',
+                dataType: 'text',
+                type: 'GET',
+                crossDomain: true
+            }).done(function(data, statusText, XHR) {
+                if (XHR.status === 200) {
+                    $('.loading-state').text('Shuffling decks, rolling dice');
+                    const parsedData = $.xml2json(data);
+                    for (let i = 0; i < parsedData.item.length; i++) {
+                        ownedGames.push(parseInt(parsedData.item[i].objectid));
+                    }
+                    populateGrid(parsedData);
+                    gamesFetched = true;
+                }
+                else if (XHR.status === 202) {
+                    /*
+                    Sometimes BGG needs to rebuild their cache with a user collection
+                    This makes sure the collection is fetched without sending too many request to the BGG API
+                    */
+                    $('.loading-state').text('Rebuilding cache and fetching games again');
+                    sleepTime = 2000;
+                } else if (XHR.status === 429) {
+                    $('.loading-state').text('Collection too big, cooling down');
+                    sleepTime = 15000;
+                }
+            });
+        } catch (error) {
+            console.error('Unexpected error from fetchAllGames:', error);
+            break;
         }
-    })
+
+        if (!gamesFetched) {
+            await delay(sleepTime);
+        }
+    }
     return ownedGames;
 }
 
 async function fetchAllExpansions() {
     let ownedExpansions = [];
-    $.ajax({
-        url: api_url + 'collection?username=' + bggUserName + '&stats=1&subtype=boardgameexpansion&own=1',
-        dataType: 'text',
-        type: 'GET',
-        crossDomain: true
-    }).done(function(data, statusText, XHR) {
-        if (XHR.status == 200) {
-            expansions = $.xml2json(data);
-            for (let i = 0; i < expansions.item.length; i++) {
-                ownedExpansions.push(parseInt(expansions.item[i].objectid));
-            }
-        } else if (XHR.status == 202) {
-            /*
-            Sometimes BGG needs to rebuild their cache with a user collection
-            This makes sure the collection is fetched without sending too many request to the BGG API 
-            */
-            return setTimeout(fetchAllExpansions, 7500);
-        } else if (XHR.status == 429) {
-            return setTimeout(fetchAllExpansions, 15000);
+    let expansionsFetched = false;
+    let sleepTime = 1000;
+
+    while (!expansionsFetched) {
+        try {
+            await $.ajax({
+                url: api_url + 'collection?username=' + bggUserName + '&stats=1&subtype=boardgameexpansion&own=1',
+                dataType: 'text',
+                type: 'GET',
+                crossDomain: true
+            }).done(function(data, statusText, XHR) {
+                if (XHR.status === 200) {
+                    const expansions = $.xml2json(data);
+                    for (let i = 0; i < expansions.item.length; i++) {
+                        ownedExpansions.push(parseInt(expansions.item[i].objectid));
+                    }
+                    expansionsFetched = true;
+                } else if (XHR.status === 202) {
+                    /*
+                    Sometimes BGG needs to rebuild their cache with a user collection
+                    This makes sure the collection is fetched without sending too many request to the BGG API
+                    */
+                    sleepTime = 2000;
+                } else if (XHR.status === 429) {
+                    sleepTime = 7500;
+                }
+            });
+
+        } catch (error) {
+            console.error('Unexpected error from fetchAllExpansions:', error);
+            break;
         }
-    })
+
+        if (!expansionsFetched) {
+            await delay(sleepTime);
+        }
+    }
     return ownedExpansions;
 }
 
@@ -126,7 +160,7 @@ async function updateCollectors(games, expansions) {
 }
 
 async function populateGrid(games) {
-    $('.loading-state').text('Showing of games');
+    $('.loading-state').text('Unboxing games');
     for (const game of games.item) {
         if (!$('#' + game.objectid).length) {
             /* Handle single data (only 2 players, only 30 min playtimes) responses */
@@ -205,7 +239,6 @@ async function populateModal(game) {
 /* Used by populateModal and populateExpansions  */
 async function fetchSpecificGames(boardGameId) {
     let result = [];
-    result.item = [];
     let x = 0;
     while (x <= boardGameId.length) {
         try {
@@ -215,7 +248,7 @@ async function fetchSpecificGames(boardGameId) {
                 type: 'GET',
                 crossDomain: true
             }));
-            result.item.push(partialResult.item);
+            result.push(partialResult.item);
         } catch(error) {
             console.error('Error from fetchSpecificGames, id: ' + boardGameId.slice(x, x + 20) + '. ' , error);
             throw error;
@@ -223,7 +256,7 @@ async function fetchSpecificGames(boardGameId) {
         x += 20;
         delay(200);
     }
-    return result.item.flat();
+    return result.flat();
 }
 
 async function fetchGamePrice(boardGameId) {
@@ -406,9 +439,9 @@ function decodeString(encodedString) {
     return decoder.value;
 }
 
-function initiateSort(sortBy) {
+function initiateSort(sortBy, changeSortOrder = true) {
     let sortedGames = false;
-    const sortAsc = sortOrderUpdate(sortBy);
+    const sortAsc = (changeSortOrder ? sortOrderUpdate(sortBy): true);
     const sortObj = $('.game-grid').children('.game-cell');
     switch (sortBy) {
         case('name'):
@@ -499,6 +532,7 @@ function filterGames(filterBy) {
 function sortOnLoad() {
     let filterBy = false;
     let sortBy = false;
+    let beenSorted = false;
     if (urlParams.has('filter')) {
         filterBy = urlParams.get('filter').toLocaleLowerCase();
     }
@@ -510,12 +544,15 @@ function sortOnLoad() {
         for (const sort of sort_options) {
             if (sortBy.includes(sort)) {
                 if (sort_options.indexOf(sortBy) > -1) {
-                    initiateSort(sortBy);
+                    beenSorted = true;
+                    initiateSort(sortBy, false);
                 }
             }
         }
-    } else {
-        initiateSort('score-user');
+    }
+    if (!beenSorted) {
+        /* Default sorting option, if no url parameter is set or if it isn't set correct */
+        initiateSort('score-user', false);
     }
     if (filterBy != false && filterBy.includes('playercount')) {
         const playercount = Math.round(Math.abs(filterBy.split('-')[1]));
