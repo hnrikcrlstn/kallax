@@ -187,7 +187,7 @@ async function populateGrid(games) {
                 '<div class="game-bgg-rating' + (bggRank > 500 ? '"' : ' top-ranked"') + '># ' + bggRank + '</div>' +
                 '<div class="game-cover-image"><img class="lazyload" src="' + (game.thumbnail === undefined ? "/img/missing-image.svg" : game.thumbnail)  + '" data-src="' + (game.image === undefined ? "/img/missing-image.svg" : game.image) + '"></div></div></div>' +
                 '<div class="game-data"><div class="game-data-row"><div>' + playerCount + '</div><div>' + playTime + ' min</div></div><div class="game-data-row game-header-row"><div>Players</div><div>Play time</div></div></div>';
-                $('.game-grid').append(gameCell);
+            $('.game-grid').append(gameCell);
         }
     };
     $('.bgg-user-input').removeClass('disabled');
